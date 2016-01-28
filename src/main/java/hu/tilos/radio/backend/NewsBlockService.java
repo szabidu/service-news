@@ -216,7 +216,7 @@ public class NewsBlockService {
         Path destinationFilePath = getOutputDirPath().resolve(block.createDestinationPath());
 
         StringBuilder b = new StringBuilder();
-        b.append("#!/usr/bin/bash\n" +
+        b.append("#!/bin/bash\n" +
                 "export TMPDIR=./tmp\n" +
                 "rm -rf $TMPDIR\n" +
                 "mkdir -p $TMPDIR\n" +
@@ -255,6 +255,7 @@ public class NewsBlockService {
     public void generate(NewsBlock block) {
         if (block.getFiles().isEmpty()) {
             selectFiles(block, newsFileService.getFiles());
+            newsBlockRepository.save(block);
         }
         String generateScript = getGenerateScript(block);
         executeScript(generateScript);
@@ -268,7 +269,7 @@ public class NewsBlockService {
             throw new RuntimeException(e);
         }
         scriptPath.toFile().setExecutable(true);
-        ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/bash", "-c", "/tmp/script.sh");
+        ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", "/tmp/script.sh");
         processBuilder.directory(new File(workDir));
         try {
 
