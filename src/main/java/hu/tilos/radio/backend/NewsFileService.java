@@ -2,6 +2,7 @@ package hu.tilos.radio.backend;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -23,19 +24,20 @@ public class NewsFileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewsFileService.class);
 
-    private Path root = Paths.get("/home/elek/tilos/news-files/hirek/nyers");
-
+    @Value("${news.inputDir}")
+    private String root;
 
     @Inject
     private NewsFileRepository newsFileRepository;
 
     @Inject
     private NewsBlockRepository newsBlockRepository;
+    private Path rootPath;
 
     public List<NewsFile> getFiles() {
         newsFileRepository.deleteAll();
         LocalDateTime latest = getLatestFileRecordDate();
-        List<Path> files = checkNewFiles(root, latest);
+        List<Path> files = checkNewFiles(getRootPath(), latest);
         storeFiles(files);
         return getRecentFiles().stream().filter(block -> block.getExpiration().isAfter(LocalDateTime.now())).collect(Collectors.toList());
     }
@@ -46,7 +48,7 @@ public class NewsFileService {
                 NewsFile newsFile = new NewsFile();
                 newsFile.setPath(file.toString());
                 newsFile.setDuration(calculateDuration(file));
-                newsFile.setCreated(getCreationDate(root.resolve(file)));
+                newsFile.setCreated(getCreationDate(getRootPath().resolve(file)));
                 newsFile.setCategory(file.iterator().next().toString());
                 newsFile.setExpiration(newsFile.getCreated().plusDays(detectExpiration(newsFile.getPath().toString())));
                 newsFileRepository.save(newsFile);
@@ -69,7 +71,7 @@ public class NewsFileService {
     }
 
     private int calculateDuration(Path file) {
-        ProcessBuilder pb = new ProcessBuilder("soxi", "-D", root.resolve(file).toString());
+        ProcessBuilder pb = new ProcessBuilder("soxi", "-D", getRootPath().resolve(file).toString());
         try {
             Process start = pb.start();
             String result = new Scanner(start.getInputStream()).useDelimiter("//Z").next();
@@ -83,7 +85,7 @@ public class NewsFileService {
 
     private LocalDateTime getCreationDate(Path file) {
         try {
-            BasicFileAttributes attr = Files.readAttributes(root.resolve(file), BasicFileAttributes.class);
+            BasicFileAttributes attr = Files.readAttributes(getRootPath().resolve(file), BasicFileAttributes.class);
             return LocalDateTime.ofInstant(attr.creationTime().toInstant(), ZoneId.systemDefault());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -97,7 +99,7 @@ public class NewsFileService {
                 if (Files.isDirectory(entry)) {
                     files.addAll(checkNewFiles(entry, fromDate));
                 } else if (getCreationDate(entry).isAfter(fromDate)) {
-                    files.add(root.relativize(entry));
+                    files.add(getRootPath().relativize(entry));
                 }
             }
         } catch (IOException e) {
@@ -118,4 +120,7 @@ public class NewsFileService {
     }
 
 
+    public Path getRootPath() {
+        return Paths.get(root);
+    }
 }

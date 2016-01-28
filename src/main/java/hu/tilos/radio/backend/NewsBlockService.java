@@ -2,6 +2,7 @@ package hu.tilos.radio.backend;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,11 @@ public class NewsBlockService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewsBlockService.class);
 
-    private Path root = Paths.get("/home/elek/tilos/news-files/hirek/nyers");
+    @Value("${news.inputDir}")
+    private String inputDir;
 
-    private Path outputDir = Paths.get("/home/elek/tilos/news-files/hirek/kesz");
+    @Value("${news.outputDir}")
+    private String outputDir;
 
 
     @Inject
@@ -41,6 +44,14 @@ public class NewsBlockService {
     private NewsBlockRepository newsBlockRepository;
 
 
+    public Path getInputDirPath() {
+        return Paths.get(inputDir);
+    }
+
+    public Path getOutputDirPath() {
+        return Paths.get(outputDir);
+    }
+
     public List<NewsBlock> getBlocks(LocalDate date) {
 
         List<NewsBlock> scheduled = getScheduledBlocks(date);
@@ -49,7 +60,7 @@ public class NewsBlockService {
 
         persistMissing(scheduled, persistent);
 
-        return getPersistentBlocks(date).stream().map(block -> block.findGeneratedFiled(outputDir)).collect(Collectors.toList());
+        return getPersistentBlocks(date).stream().map(block -> block.findGeneratedFiled(getOutputDirPath())).collect(Collectors.toList());
     }
 
     private void persistMissing(List<NewsBlock> scheduled, List<NewsBlock> persistent) {
@@ -92,7 +103,7 @@ public class NewsBlockService {
         }).collect(Collectors.toList());
     }
 
-    @Scheduled(fixedRate = 10  * 60 * 1000)
+    @Scheduled(fixedRate = 10 * 60 * 1000)
     public void prepare() {
         LOG.debug("Checking new files to generate");
         LocalDateTime now = LocalDateTime.now();
@@ -183,11 +194,11 @@ public class NewsBlockService {
             selectFiles(block, newsFileService.getFiles());
         }
         newsBlockRepository.save(block);
-        return getBlock(date,name);
+        return getBlock(date, name);
     }
 
     public NewsBlock getBlock(LocalDate date, String name) {
-        return newsBlockRepository.findOneByDateBetweenAndName(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), name).findGeneratedFiled(outputDir);
+        return newsBlockRepository.findOneByDateBetweenAndName(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), name).findGeneratedFiled(getOutputDirPath());
     }
 
     public String getGenerateScript(LocalDate date, String name) {
@@ -195,7 +206,7 @@ public class NewsBlockService {
     }
 
     public String getGenerateScript(NewsBlock block) {
-        Path destinationFilePath = outputDir.resolve(block.createDestinationPath());
+        Path destinationFilePath = getOutputDirPath().resolve(block.createDestinationPath());
 
         StringBuilder b = new StringBuilder();
         b.append("#!/bin/bash\n" +
@@ -206,7 +217,7 @@ public class NewsBlockService {
         b.append("sox $SIGNALDIR/silence6.wav $TMPDIR/temp.wav\n");
         b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
         for (NewsFile file : block.getFiles()) {
-            b.append("sox \"" + root.resolve(file.getPath()) + "\" $TMPDIR/hir.wav silence 1 0.1 0.1% reverse silence 1 0.1 0.1% reverse\n");
+            b.append("sox \"" + getOutputDirPath().resolve(file.getPath()) + "\" $TMPDIR/hir.wav silence 1 0.1 0.1% reverse silence 1 0.1 0.1% reverse\n");
             b.append("sox $TMPDIR/hirekeddig.wav $TMPDIR/hir.wav $SIGNALDIR/silence3.wav $TMPDIR/temp.wav\n");
             b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
         }
