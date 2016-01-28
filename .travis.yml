@@ -1,0 +1,21 @@
+language: java
+
+services:
+   - mongodb
+
+jdk:
+  - oraclejdk8
+  
+after_success:
+- mkdir -p target/upload
+- cp target/service-news-1.1-SNAPSHOT.jar target/upload/service-news.jar
+deploy:
+  provider: s3
+  access_key_id: $S3_KEY
+  secret_access_key: $S3_SECRET
+  bucket: tilosdeploy
+  acl: public_read
+  local_dir: target/upload
+  skip_cleanup: true
+
+
