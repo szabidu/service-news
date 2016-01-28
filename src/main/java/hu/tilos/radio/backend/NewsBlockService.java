@@ -27,6 +27,9 @@ public class NewsBlockService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewsBlockService.class);
 
+    @Value("${news.workDir}")
+    private String workDir;
+
     @Value("${news.inputDir}")
     private String inputDir;
 
@@ -266,7 +269,7 @@ public class NewsBlockService {
         }
         scriptPath.toFile().setExecutable(true);
         ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/bash", "-c", "/tmp/script.sh");
-        processBuilder.directory(new File("/home/elek/tilos/news-files/hirek"));
+        processBuilder.directory(new File(workDir));
         try {
 
             Process process = processBuilder.start();
