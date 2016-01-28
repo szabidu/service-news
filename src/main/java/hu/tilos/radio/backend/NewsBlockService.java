@@ -85,10 +85,14 @@ public class NewsBlockService {
         List<NewsBlock> result = new ArrayList<>();
         result.add(new NewsBlock("reggel", date.atTime(7, 0), 11 * 60));
         result.add(new NewsBlock("este", date.atTime(19, 0), 11 * 60));
+        result.add(new NewsBlock("rovid-5", date.atTime(6, 0), 3 * 60));
+        result.add(new NewsBlock("rovid-6", date.atTime(6, 0), 3 * 60));
         for (int i = 8; i < 19; i++) {
             result.add(new NewsBlock("rovid-" + i, date.atTime(i, 0), 3 * 60));
         }
-        result.add(new NewsBlock("rovid-t1", date.atTime(23, 0), 3 * 60));
+        for (int i = 20; i <= 23; i++) {
+            result.add(new NewsBlock("rovid-" + i, date.atTime(i, 0), 3 * 60));
+        }
         return result;
 
     }
@@ -209,7 +213,7 @@ public class NewsBlockService {
         Path destinationFilePath = getOutputDirPath().resolve(block.createDestinationPath());
 
         StringBuilder b = new StringBuilder();
-        b.append("#!/bin/bash\n" +
+        b.append("#!/usr/bin/bash\n" +
                 "export TMPDIR=./tmp\n" +
                 "rm -rf $TMPDIR\n" +
                 "mkdir -p $TMPDIR\n" +
@@ -261,7 +265,7 @@ public class NewsBlockService {
             throw new RuntimeException(e);
         }
         scriptPath.toFile().setExecutable(true);
-        ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "/tmp/script.sh");
+        ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/bash", "-c", "/tmp/script.sh");
         processBuilder.directory(new File("/home/elek/tilos/news-files/hirek"));
         try {
 
