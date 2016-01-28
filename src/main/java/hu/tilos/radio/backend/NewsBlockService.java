@@ -224,7 +224,7 @@ public class NewsBlockService {
         b.append("sox $SIGNALDIR/silence6.wav $TMPDIR/temp.wav\n");
         b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
         for (NewsFile file : block.getFiles()) {
-            b.append("sox \"" + getOutputDirPath().resolve(file.getPath()) + "\" $TMPDIR/hir.wav silence 1 0.1 0.1% reverse silence 1 0.1 0.1% reverse\n");
+            b.append("sox \"" + getInputDirPath().resolve(file.getPath()) + "\" $TMPDIR/hir.wav silence 1 0.1 0.1% reverse silence 1 0.1 0.1% reverse\n");
             b.append("sox $TMPDIR/hirekeddig.wav $TMPDIR/hir.wav $SIGNALDIR/silence3.wav $TMPDIR/temp.wav\n");
             b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
         }
