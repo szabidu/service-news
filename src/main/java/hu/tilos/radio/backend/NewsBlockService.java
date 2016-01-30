@@ -88,14 +88,14 @@ public class NewsBlockService {
 
     private List<NewsBlock> getScheduledBlocks(LocalDate date) {
         List<NewsBlock> result = new ArrayList<>();
-        result.add(new NewsBlock("reggel", date.atTime(7, 0), 11 * 60));
-        result.add(new NewsBlock("este", date.atTime(19, 0), 11 * 60));
+        result.add(new NewsBlock("reggel", date.atTime(6, 48), 11 * 60 + 30));
+        result.add(new NewsBlock("este", date.atTime(19, 48), 11 * 60 + 30));
         result.add(new NewsBlock("rovid-5", date.atTime(6, 0), 3 * 60));
         result.add(new NewsBlock("rovid-6", date.atTime(6, 0), 3 * 60));
         for (int i = 8; i < 19; i++) {
             result.add(new NewsBlock("rovid-" + i, date.atTime(i, 0), 3 * 60));
         }
-        for (int i = 20; i <= 23; i++) {
+        for (int i = 20; i < 23; i++) {
             result.add(new NewsBlock("rovid-" + i, date.atTime(i, 0), 3 * 60));
         }
         return result;
