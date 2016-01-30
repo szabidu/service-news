@@ -90,7 +90,10 @@ public class NewsBlockService {
     private List<NewsBlock> getScheduledBlocks(LocalDate date) {
         List<NewsBlock> result = new ArrayList<>();
 
-        if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+        if (date.getDayOfWeek() == DayOfWeek.SATURDAY) {
+            result.add(new NewsBlock("reggel", date.atTime(8, 55), 11 * 60 + 30));
+            result.add(new NewsBlock("este", date.atTime(20, 0), 11 * 60 + 30));
+        } else if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
             result.add(new NewsBlock("reggel", date.atTime(8, 50), 11 * 60 + 30));
             result.add(new NewsBlock("este", date.atTime(20, 0), 11 * 60 + 30));
         } else if (date.getDayOfWeek() == DayOfWeek.MONDAY) {
