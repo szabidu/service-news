@@ -97,11 +97,6 @@ public class NewsBlockService {
             result.add(new NewsBlock("reggel", date.atTime(8, 50), 11 * 60 + 30));
             result.add(new NewsBlock("este", date.atTime(20, 0), 11 * 60 + 30));
         } else if (date.getDayOfWeek() == DayOfWeek.MONDAY) {
-//            result.add(new NewsBlock("tartalek1-3perc", date.atTime(4, 0), 3*60));
-//            result.add(new NewsBlock("tartalak2-3perc", date.atTime(4, 2), 3*60));
-//            result.add(new NewsBlock("tartalek1-6perc", date.atTime(4, 3), 6*60));
-//            result.add(new NewsBlock("tartelek2-6perc", date.atTime(4, 4), 6*60));
-
             result.add(new NewsBlock("orankenti1", date.atTime(5, 0), 3));
             result.add(new NewsBlock("reggel", date.atTime(6, 48), 9 * 60 + 2 * 3 * 60));
             result.add(new NewsBlock("orankenti2", date.atTime(8, 0), 3 * 60));

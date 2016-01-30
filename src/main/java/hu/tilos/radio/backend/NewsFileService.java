@@ -62,7 +62,7 @@ public class NewsFileService {
     private void cleanup(List<NewsFile> recentFiles) {
         recentFiles.forEach(newsFile -> {
             if (!Files.exists(getInputPath().resolve(newsFile.getPath()))) {
-                newsFileRepository.delete(recentFiles);
+                newsFileRepository.delete(newsFile);
             }
         });
     }
