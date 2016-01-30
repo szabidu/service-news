@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -88,15 +89,53 @@ public class NewsBlockService {
 
     private List<NewsBlock> getScheduledBlocks(LocalDate date) {
         List<NewsBlock> result = new ArrayList<>();
-        result.add(new NewsBlock("reggel", date.atTime(6, 48), 11 * 60 + 30));
-        result.add(new NewsBlock("este", date.atTime(19, 48), 11 * 60 + 30));
-        result.add(new NewsBlock("rovid-5", date.atTime(6, 0), 3 * 60));
-        result.add(new NewsBlock("rovid-6", date.atTime(6, 0), 3 * 60));
-        for (int i = 8; i < 19; i++) {
-            result.add(new NewsBlock("rovid-" + i, date.atTime(i, 0), 3 * 60));
-        }
-        for (int i = 20; i < 23; i++) {
-            result.add(new NewsBlock("rovid-" + i, date.atTime(i, 0), 3 * 60));
+
+        if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            result.add(new NewsBlock("reggel", date.atTime(8, 50), 11 * 60 + 30));
+            result.add(new NewsBlock("este", date.atTime(20, 0), 11 * 60 + 30));
+        } else if (date.getDayOfWeek() == DayOfWeek.MONDAY) {
+//            result.add(new NewsBlock("tartalek1-3perc", date.atTime(4, 0), 3*60));
+//            result.add(new NewsBlock("tartalak2-3perc", date.atTime(4, 2), 3*60));
+//            result.add(new NewsBlock("tartalek1-6perc", date.atTime(4, 3), 6*60));
+//            result.add(new NewsBlock("tartelek2-6perc", date.atTime(4, 4), 6*60));
+
+            result.add(new NewsBlock("orankenti1", date.atTime(5, 0), 3));
+            result.add(new NewsBlock("reggel", date.atTime(6, 48), 9 * 60 + 2 * 3 * 60));
+            result.add(new NewsBlock("orankenti2", date.atTime(8, 0), 3 * 60));
+            result.add(new NewsBlock("orankenti3", date.atTime(9, 57), 6 * 60));
+            result.add(new NewsBlock("orankenti4", date.atTime(11, 57), 6 * 60));
+            result.add(new NewsBlock("orankenti5", date.atTime(13, 28, 30), 3 * 60));
+            result.add(new NewsBlock("orankenti6", date.atTime(14, 57, 30), 6 * 60));
+            result.add(new NewsBlock("orankenti7", date.atTime(16, 28, 30), 3 * 60));
+            result.add(new NewsBlock("orankenti8", date.atTime(17, 30), 3 * 60));
+            result.add(new NewsBlock("orankenti9", date.atTime(18, 30), 3 * 60));
+            result.add(new NewsBlock("este", date.atTime(19, 48), 12 * 60 + +2 * 3 * 30));
+            result.add(new NewsBlock("orankenti10", date.atTime(21, 00), 3 * 60));
+            result.add(new NewsBlock("orankenti11", date.atTime(22, 00), 3 * 60));
+        } else if (date.getDayOfWeek() == DayOfWeek.TUESDAY) {
+            result.add(new NewsBlock("orankenti1", date.atTime(5, 0), 3));
+            result.add(new NewsBlock("reggel", date.atTime(6, 48), 9 * 60 + 2 * 3 * 60));
+            result.add(new NewsBlock("orankenti2", date.atTime(8, 0), 3 * 60));
+            result.add(new NewsBlock("orankenti3", date.atTime(9, 57), 6 * 60));
+            result.add(new NewsBlock("orankenti4", date.atTime(11, 57), 6 * 60));
+            result.add(new NewsBlock("orankenti5", date.atTime(13, 57, 0), 6 * 60));
+            result.add(new NewsBlock("orankenti6", date.atTime(14, 57, 30), 6 * 60));
+            result.add(new NewsBlock("orankenti7", date.atTime(16, 28, 30), 3 * 60));
+            result.add(new NewsBlock("orankenti8", date.atTime(17, 57), 6 * 60));
+            result.add(new NewsBlock("este", date.atTime(19, 48), 12 * 60 + +2 * 3 * 30));
+            result.add(new NewsBlock("orankenti10", date.atTime(21, 00), 3 * 60));
+            result.add(new NewsBlock("orankenti11", date.atTime(22, 00), 3 * 60));
+        } else {
+            result.add(new NewsBlock("reggel", date.atTime(6, 48), 11 * 60 + 30));
+            result.add(new NewsBlock("este", date.atTime(19, 48), 11 * 60 + 30));
+            result.add(new NewsBlock("rovid-5", date.atTime(6, 0), 3 * 60));
+            result.add(new NewsBlock("rovid-6", date.atTime(6, 0), 3 * 60));
+            for (int i = 8; i < 19; i++) {
+                result.add(new NewsBlock("rovid-" + i, date.atTime(i, 0), 3 * 60));
+            }
+            for (int i = 20; i < 23; i++) {
+                result.add(new NewsBlock("rovid-" + i, date.atTime(i, 0), 3 * 60));
+            }
         }
         return result;
 
@@ -272,4 +311,17 @@ public class NewsBlockService {
     }
 
 
+    public void deleteDay(LocalDate date) {
+        for (NewsBlock block : getBlocks(date)) {
+            if (block.getPath() != null) {
+                try {
+                    Files.delete(getOutputDirPath().resolve(block.getPath()));
+                } catch (IOException e) {
+                    LOG.error("Can't detele file: " + block.getPath(), e);
+                }
+            }
+            newsBlockRepository.delete(block);
+        }
+
+    }
 }

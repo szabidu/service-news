@@ -51,7 +51,7 @@ public class NewsController {
         return blockService.getTodo();
     }
 
-    @RequestMapping(value = "/api/v1/news/block/{date}")
+    @RequestMapping(value = "/api/v1/news/block/{date}", method = RequestMethod.GET)
     public List<NewsBlock> blockList(@PathVariable String date) {
         return blockService.getBlocks(LocalDate.parse(date));
     }
@@ -61,12 +61,12 @@ public class NewsController {
         return blockService.getBlock(LocalDate.parse(date), name);
     }
 
-    @RequestMapping(value = "/api/v1/news/block/{date}/{name}", method = RequestMethod.GET, produces = "text/plain")
-    @ResponseBody
-    public String getBlockList(@PathVariable String date, @PathVariable String name) {
-        return blockService.getGenerateScript(LocalDate.parse(date), name);
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
+    @RequestMapping(value = "/api/v1/news/block/{date}", method = RequestMethod.DELETE)
+    public String delete(@PathVariable String date) {
+        blockService.deleteDay(LocalDate.parse(date));
+        return "OK";
     }
-
 
     @PreAuthorize("hasRole('ROLE_AUTHOR')")
     @RequestMapping(value = "/api/v1/news/block/{date}/{name}", method = RequestMethod.POST)
