@@ -233,9 +233,18 @@ public class NewsBlockService {
                 "export SIGNALDIR=./signal\n");
         b.append("sox $SIGNALDIR/silence6.wav $TMPDIR/temp.wav\n");
         b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
+        String lastCategory = null;
         for (NewsFile file : block.getFiles()) {
+            if (lastCategory == null || !lastCategory.equals(file.getCategory())) {
+                Path signalPath = Paths.get(workDir, "signal", file.getCategory() + ".wav");
+                if (Files.exists(signalPath)) {
+                    b.append("sox $TMPDIR/hirekeddig.wav \"" + signalPath + "\" $SIGNALDIR/silence3.wav $TMPDIR/temp.wav\n");
+                    b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
+                }
+            }
             b.append("sox $TMPDIR/hirekeddig.wav \"" + getInputDirPath().resolve(file.getPath()) + "\" $SIGNALDIR/silence3.wav $TMPDIR/temp.wav\n");
             b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
+            lastCategory = file.getCategory();
         }
         b.append("sox $TMPDIR/hirekeddig.wav $SIGNALDIR/silence3.wav $TMPDIR/hireketmondunk.wav\n" +
                 "sox $SIGNALDIR/hirekzene.mp3 $TMPDIR/zenemost.wav trim 0 $(soxi -s $TMPDIR/hireketmondunk.wav)s \n" +
