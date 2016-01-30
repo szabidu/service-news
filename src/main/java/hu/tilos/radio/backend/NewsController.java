@@ -20,7 +20,7 @@ public class NewsController {
 
     @RequestMapping(value = "/api/v1/news/file")
     public List<NewsFile> fileList() {
-        return fileService.getRecentFiles();
+        return fileService.getFiles();
     }
 
     @RequestMapping(value = "/api/v1/news/todo")
@@ -56,9 +56,4 @@ public class NewsController {
         }
     }
 
-
-    @RequestMapping(value = "/api/v1/news/import")
-    public List<NewsFile> importFiles() {
-        return fileService.getFiles();
-    }
 }

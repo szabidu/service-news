@@ -39,7 +39,17 @@ public class NewsFileService {
         LocalDateTime latest = getLatestFileRecordDate();
         List<Path> files = checkNewFiles(getRootPath(), latest);
         storeFiles(files);
-        return getRecentFiles().stream().filter(block -> block.getExpiration().isAfter(LocalDateTime.now())).collect(Collectors.toList());
+        List<NewsFile> allFiles = getRecentFiles();
+        cleanup(allFiles);
+        return getRecentFiles();
+    }
+
+    private void cleanup(List<NewsFile> recentFiles) {
+        recentFiles.forEach(newsFile -> {
+            if (!Files.exists(getRootPath().resolve(newsFile.getPath()))) {
+                newsFileRepository.delete(recentFiles);
+            }
+        });
     }
 
     private void storeFiles(List<Path> files) {
@@ -115,8 +125,8 @@ public class NewsFileService {
         } else return LocalDateTime.MIN;
     }
 
-    public List<NewsFile> getRecentFiles() {
-        return newsFileRepository.findAll();
+    private List<NewsFile> getRecentFiles() {
+        return newsFileRepository.findAll().stream().filter(block -> block.getExpiration().isAfter(LocalDateTime.now())).collect(Collectors.toList());
     }
 
 

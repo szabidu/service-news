@@ -196,9 +196,16 @@ public class NewsBlockService {
     }
 
     public NewsBlock draw(LocalDate date, String name) {
-        NewsBlock block = newsBlockRepository.findOneByDateBetweenAndName(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), name);
+        NewsBlock block = newsBlockRepository.findOneByDateBetweenAndName(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), name).findGeneratedFiled(getOutputDirPath());
         if (block != null) {
             selectFiles(block, newsFileService.getFiles());
+            if (block.getPath() != null) {
+                try {
+                    Files.delete(getOutputDirPath().resolve(block.getPath()));
+                } catch (IOException e) {
+                    LOG.error("Can't delete file", e);
+                }
+            }
         }
         newsBlockRepository.save(block);
         return getBlock(date, name);

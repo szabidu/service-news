@@ -114,6 +114,8 @@ public class NewsBlock {
         Path destinationPath = createDestinationPath();
         if (Files.exists(root.resolve(destinationPath))) {
             setPath(destinationPath.toString());
+        } else {
+            setPath(null);
         }
         return this;
     }
