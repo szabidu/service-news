@@ -5,6 +5,7 @@ import hu.tilos.radio.backend.mongoconverters.FromLocalDate;
 import hu.tilos.radio.backend.mongoconverters.FromLocalDateTime;
 import hu.tilos.radio.backend.mongoconverters.ToLocalDate;
 import hu.tilos.radio.backend.mongoconverters.ToLocalDateTime;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
@@ -16,9 +17,15 @@ import java.util.Arrays;
 @EnableMongoRepositories()
 public class MongoConfiguration extends AbstractMongoConfiguration {
 
+    @Value("${mongo.host}")
+    private String mongoHost;
+
+    @Value("${mongo.db}")
+    private String mongoDb;
+
     @Override
     protected String getDatabaseName() {
-        return "test";
+        return mongoDb;
     }
 
     @Override

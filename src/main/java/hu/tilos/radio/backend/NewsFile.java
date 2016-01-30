@@ -2,12 +2,14 @@ package hu.tilos.radio.backend;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Document(collection = "newsfile")
 public class NewsFile {
     @Id
     private String id;

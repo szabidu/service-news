@@ -9,12 +9,16 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @EnableAutoConfiguration
 @ComponentScan
 @SpringBootApplication
 @EnableScheduling
 @EnableEurekaClient
+@EnableWebSecurity
+@Configuration
 public class NewsStarter {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewsStarter.class);

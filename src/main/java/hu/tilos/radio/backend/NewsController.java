@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,7 @@ public class NewsController {
         return fileService.getFiles();
     }
 
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
     @RequestMapping(value = "/api/v1/news/upload", method = RequestMethod.POST)
     @ResponseBody
     public void handleFileUpload(
@@ -38,7 +40,8 @@ public class NewsController {
 
     }
 
-    @RequestMapping(value = "/api/v1/news/import")
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
+    @RequestMapping(value = "/api/v1/news/import", method = RequestMethod.POST)
     public void importFiles() {
         fileService.importNewFiles();
     }
@@ -65,6 +68,7 @@ public class NewsController {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
     @RequestMapping(value = "/api/v1/news/block/{date}/{name}", method = RequestMethod.POST)
     public NewsBlock save(@PathVariable String date, @PathVariable String name, @RequestParam(defaultValue = "false") boolean generate) {
         LocalDate localDate = LocalDate.parse(date);
