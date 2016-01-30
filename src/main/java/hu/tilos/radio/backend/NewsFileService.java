@@ -4,6 +4,7 @@ import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -37,12 +38,21 @@ public class NewsFileService {
     @Inject
     private ScriptExecutor scriptExecutor;
 
+    @Scheduled(fixedRate = 1 * 60 * 1000)
+    public void prepare() {
+        LOG.debug("Checking new files to import");
+        importNewFiles();
+    }
 
-    public synchronized void importNewFiles(){
+    public synchronized void importNewFiles() {
         LocalDateTime latest = getLatestFileRecordDate();
         List<Path> files = checkNewFiles(getImportPath(), latest);
+        if (files.size() > 0) {
+            LOG.info("importing " + files.size() + " new file");
+        }
         storeFiles(files);
     }
+
     public synchronized List<NewsFile> getFiles() {
         List<NewsFile> allFiles = getRecentFiles();
         cleanup(allFiles);
@@ -142,7 +152,7 @@ public class NewsFileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        LOG.info("found " + files.size() + " new file");
+
         return files;
     }
 
