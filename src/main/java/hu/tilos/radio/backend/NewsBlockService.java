@@ -176,7 +176,7 @@ public class NewsBlockService {
 
     private void selectFiles(NewsBlock block, List<NewsFile> files) {
         List<NewsFile> selectedFiles = new ArrayList<>();
-        List<NewsFile> availableFiles = files;
+        List<NewsFile> availableFiles = files.stream().filter(file -> file.getExpiration().isAfter(block.getDate())).collect(Collectors.toList());
         while (durationOf(selectedFiles) + 2 * 20 + (selectedFiles.size() * 3) < block.getExpectedDuration()) {
             NewsFile one = pickOne(availableFiles);
             if (one != null) {
