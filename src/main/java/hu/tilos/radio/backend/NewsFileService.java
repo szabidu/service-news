@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,10 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,21 +22,28 @@ public class NewsFileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewsFileService.class);
 
+    @Value("${news.importDir}")
+    private String importDir;
+
     @Value("${news.inputDir}")
-    private String root;
+    private String inputDir;
 
     @Inject
     private NewsFileRepository newsFileRepository;
 
     @Inject
     private NewsBlockRepository newsBlockRepository;
-    private Path rootPath;
 
-    public List<NewsFile> getFiles() {
-        newsFileRepository.deleteAll();
+    @Inject
+    private ScriptExecutor scriptExecutor;
+
+
+    public synchronized void importNewFiles(){
         LocalDateTime latest = getLatestFileRecordDate();
-        List<Path> files = checkNewFiles(getRootPath(), latest);
+        List<Path> files = checkNewFiles(getImportPath(), latest);
         storeFiles(files);
+    }
+    public synchronized List<NewsFile> getFiles() {
         List<NewsFile> allFiles = getRecentFiles();
         cleanup(allFiles);
         return getRecentFiles();
@@ -46,7 +51,7 @@ public class NewsFileService {
 
     private void cleanup(List<NewsFile> recentFiles) {
         recentFiles.forEach(newsFile -> {
-            if (!Files.exists(getRootPath().resolve(newsFile.getPath()))) {
+            if (!Files.exists(getInputPath().resolve(newsFile.getPath()))) {
                 newsFileRepository.delete(recentFiles);
             }
         });
@@ -55,10 +60,13 @@ public class NewsFileService {
     private void storeFiles(List<Path> files) {
         for (Path file : files) {
             try {
+
+                copyAndNormalize(file);
+
                 NewsFile newsFile = new NewsFile();
                 newsFile.setPath(file.toString());
                 newsFile.setDuration(calculateDuration(file));
-                newsFile.setCreated(getCreationDate(getRootPath().resolve(file)));
+                newsFile.setCreated(getCreationDate(getInputPath().resolve(file)));
                 newsFile.setCategory(file.iterator().next().toString());
                 newsFile.setExpiration(newsFile.getCreated().plusDays(detectExpiration(newsFile.getPath().toString())));
                 newsFileRepository.save(newsFile);
@@ -66,6 +74,25 @@ public class NewsFileService {
                 LOG.error("Can't persist " + file, ex);
             }
         }
+    }
+
+    private void copyAndNormalize(Path file) throws IOException {
+        String fileName = file.getFileName().toString();
+        String name = fileName.substring(0, fileName.lastIndexOf('.'));
+        String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
+        Path sourcePath = getImportPath().resolve(file);
+        Path destinationPath = getInputPath().resolve(file);
+        Path destinationDirPath = destinationPath.getParent();
+        Files.createDirectories(destinationDirPath);
+        Path tmp1Path = destinationDirPath.resolve(name + ".tmp1." + extension);
+        Path tmp2Path = destinationDirPath.resolve(name + ".tmp2." + extension);
+        String script = "#!/bin/bash\n" +
+                "set -e\n" +
+                "sox \"" + sourcePath + "\" -c 2 \"" + tmp1Path + "\"\n" +
+                "sox \"" + tmp1Path + "\" \"" + tmp2Path + "\" silence 1 0.1 0.1% reverse silence 1 0.1 0.1% reverse\n" +
+                "sox --norm \"" + tmp2Path + "\" \"" + destinationPath + "\"";
+        scriptExecutor.executeScript(script, "/tmp", "fileimport");
+
     }
 
     private static Pattern expirationPattern = Pattern.compile(".*\\((\\d+)\\).*");
@@ -81,7 +108,7 @@ public class NewsFileService {
     }
 
     private int calculateDuration(Path file) {
-        ProcessBuilder pb = new ProcessBuilder("soxi", "-D", getRootPath().resolve(file).toString());
+        ProcessBuilder pb = new ProcessBuilder("soxi", "-D", getInputPath().resolve(file).toString());
         try {
             Process start = pb.start();
             String result = new Scanner(start.getInputStream()).useDelimiter("//Z").next();
@@ -95,7 +122,7 @@ public class NewsFileService {
 
     private LocalDateTime getCreationDate(Path file) {
         try {
-            BasicFileAttributes attr = Files.readAttributes(getRootPath().resolve(file), BasicFileAttributes.class);
+            BasicFileAttributes attr = Files.readAttributes(getInputPath().resolve(file), BasicFileAttributes.class);
             return LocalDateTime.ofInstant(attr.creationTime().toInstant(), ZoneId.systemDefault());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -109,12 +136,13 @@ public class NewsFileService {
                 if (Files.isDirectory(entry)) {
                     files.addAll(checkNewFiles(entry, fromDate));
                 } else if (getCreationDate(entry).isAfter(fromDate)) {
-                    files.add(getRootPath().relativize(entry));
+                    files.add(getImportPath().relativize(entry));
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        LOG.info("found " + files.size() + " new file");
         return files;
     }
 
@@ -130,7 +158,11 @@ public class NewsFileService {
     }
 
 
-    public Path getRootPath() {
-        return Paths.get(root);
+    public Path getImportPath() {
+        return Paths.get(importDir);
+    }
+
+    public Path getInputPath() {
+        return Paths.get(inputDir);
     }
 }

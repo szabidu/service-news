@@ -23,6 +23,11 @@ public class NewsController {
         return fileService.getFiles();
     }
 
+    @RequestMapping(value = "/api/v1/news/import")
+    public void importFiles() {
+        fileService.importNewFiles();
+    }
+
     @RequestMapping(value = "/api/v1/news/todo")
     public List<NewsBlock> blockList() {
         return blockService.getTodo();

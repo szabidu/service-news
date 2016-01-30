@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +37,6 @@ public class NewsBlockService {
     @Value("${news.outputDir}")
     private String outputDir;
 
-
     @Inject
     NewsFileService newsFileService;
 
@@ -46,6 +46,8 @@ public class NewsBlockService {
     @Inject
     private NewsBlockRepository newsBlockRepository;
 
+    @Inject
+    private ScriptExecutor scriptExecutor;
 
     public Path getInputDirPath() {
         return Paths.get(inputDir);
@@ -136,7 +138,7 @@ public class NewsBlockService {
     private void selectFiles(NewsBlock block, List<NewsFile> files) {
         List<NewsFile> selectedFiles = new ArrayList<>();
         List<NewsFile> availableFiles = files;
-        while (durationOf(selectedFiles) < block.getExpectedDuration()) {
+        while (durationOf(selectedFiles) + 2 * 20 + (selectedFiles.size() * 3) < block.getExpectedDuration()) {
             NewsFile one = pickOne(availableFiles);
             if (one != null) {
                 selectedFiles.add(one);
@@ -224,6 +226,7 @@ public class NewsBlockService {
 
         StringBuilder b = new StringBuilder();
         b.append("#!/bin/bash\n" +
+                "set -e\n" +
                 "export TMPDIR=./tmp\n" +
                 "rm -rf $TMPDIR\n" +
                 "mkdir -p $TMPDIR\n" +
@@ -231,8 +234,7 @@ public class NewsBlockService {
         b.append("sox $SIGNALDIR/silence6.wav $TMPDIR/temp.wav\n");
         b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
         for (NewsFile file : block.getFiles()) {
-            b.append("sox \"" + getInputDirPath().resolve(file.getPath()) + "\" $TMPDIR/hir.wav silence 1 0.1 0.1% reverse silence 1 0.1 0.1% reverse\n");
-            b.append("sox $TMPDIR/hirekeddig.wav $TMPDIR/hir.wav $SIGNALDIR/silence3.wav $TMPDIR/temp.wav\n");
+            b.append("sox $TMPDIR/hirekeddig.wav \"" + getInputDirPath().resolve(file.getPath()) + "\" $SIGNALDIR/silence3.wav $TMPDIR/temp.wav\n");
             b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
         }
         b.append("sox $TMPDIR/hirekeddig.wav $SIGNALDIR/silence3.wav $TMPDIR/hireketmondunk.wav\n" +
@@ -244,14 +246,6 @@ public class NewsBlockService {
         return b.toString();
     }
 
-    private void logStream(InputStream inputStream) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                LOG.info(line);
-            }
-        }
-    }
 
     public NewsBlock generate(LocalDate localDate, String name) {
         NewsBlock block = getBlock(localDate, name);
@@ -265,31 +259,8 @@ public class NewsBlockService {
             newsBlockRepository.save(block);
         }
         String generateScript = getGenerateScript(block);
-        executeScript(generateScript);
+        scriptExecutor.executeScript(generateScript, workDir, "combine");
     }
 
-    private void executeScript(String script) {
-        Path scriptPath = Paths.get("/tmp/script.sh");
-        try (BufferedWriter writer = Files.newBufferedWriter(scriptPath)) {
-            writer.write(script);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        scriptPath.toFile().setExecutable(true);
-        ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", "/tmp/script.sh");
-        processBuilder.directory(new File(workDir));
-        try {
 
-            Process process = processBuilder.start();
-            logStream(process.getInputStream());
-            logStream(process.getErrorStream());
-            int i = process.waitFor();
-            if (i > 0) {
-                LOG.error("generation script stopped with code " + i);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
