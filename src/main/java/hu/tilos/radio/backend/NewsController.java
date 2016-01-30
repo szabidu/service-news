@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 
@@ -17,10 +18,24 @@ public class NewsController {
     @Inject
     private NewsFileService fileService;
 
+    @Inject
+    UploadService uploadService;
+
 
     @RequestMapping(value = "/api/v1/news/file")
     public List<NewsFile> fileList() {
         return fileService.getFiles();
+    }
+
+    @RequestMapping(value = "/api/v1/news/upload", method = RequestMethod.POST)
+    @ResponseBody
+    public void handleFileUpload(
+            @RequestParam(value = "newsfile", required = true) MultipartFile file,
+            @RequestParam(value = "category", required = true) String category) {
+
+
+        uploadService.upload(category, file);
+
     }
 
     @RequestMapping(value = "/api/v1/news/import")
