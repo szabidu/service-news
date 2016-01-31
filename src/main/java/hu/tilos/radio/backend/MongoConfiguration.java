@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend;
 
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import hu.tilos.radio.backend.mongoconverters.FromLocalDate;
 import hu.tilos.radio.backend.mongoconverters.FromLocalDateTime;
 import hu.tilos.radio.backend.mongoconverters.ToLocalDate;
@@ -30,7 +31,7 @@ public class MongoConfiguration extends AbstractMongoConfiguration {
 
     @Override
     public Mongo mongo() throws Exception {
-        return new Mongo();
+        return new MongoClient(mongoHost);
     }
 
     @Override
