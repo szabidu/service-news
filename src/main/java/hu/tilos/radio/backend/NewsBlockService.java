@@ -254,6 +254,13 @@ public class NewsBlockService {
         return newsBlockRepository.findOneByDateBetweenAndName(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), name).findGeneratedFiled(getOutputDirPath());
     }
 
+    public NewsBlock registerPlay(LocalDate date, String name) {
+        NewsBlock block = newsBlockRepository.findOneByDateBetweenAndName(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), name).findGeneratedFiled(getOutputDirPath());
+        block.getLiveAt().add(LocalDateTime.now());
+        newsBlockRepository.save(block);
+        return getBlock(date, name);
+    }
+
     public String getGenerateScript(LocalDate date, String name) {
         return getGenerateScript(getBlock(date, name));
     }

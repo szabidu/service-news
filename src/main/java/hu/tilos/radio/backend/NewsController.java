@@ -80,4 +80,10 @@ public class NewsController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
+    @RequestMapping(value = "/api/v1/news/block/{date}/{name}/play", method = RequestMethod.POST)
+    public NewsBlock registerPlay(@PathVariable String date, @PathVariable String name, @RequestParam(defaultValue = "false") boolean generate) {
+        return blockService.registerPlay(LocalDate.parse(date), name);
+    }
+
 }

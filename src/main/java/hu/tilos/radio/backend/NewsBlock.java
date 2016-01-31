@@ -35,6 +35,8 @@ public class NewsBlock {
 
     private int expectedDuration;
 
+    @JsonSerialize(using = LocalDateTimeListJsonSerializer.class)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private List<LocalDateTime> liveAt = new ArrayList<>();
 
     private String path;
