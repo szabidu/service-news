@@ -97,7 +97,7 @@ public class NewsBlockService {
             result.add(new NewsBlock("reggel", date.atTime(8, 50), 11 * 60 + 30));
             result.add(new NewsBlock("este", date.atTime(20, 0), 11 * 60 + 30));
         } else if (date.getDayOfWeek() == DayOfWeek.MONDAY) {
-            result.add(new NewsBlock("orankenti1", date.atTime(5, 0), 3));
+            result.add(new NewsBlock("orankenti1", date.atTime(5, 0), 3 * 60));
             result.add(new NewsBlock("reggel", date.atTime(6, 48), 9 * 60 + 2 * 3 * 60));
             result.add(new NewsBlock("orankenti2", date.atTime(8, 0), 3 * 60));
             result.add(new NewsBlock("orankenti3", date.atTime(9, 57), 6 * 60));
@@ -111,7 +111,7 @@ public class NewsBlockService {
             result.add(new NewsBlock("orankenti10", date.atTime(21, 00), 3 * 60));
             result.add(new NewsBlock("orankenti11", date.atTime(22, 00), 3 * 60));
         } else if (date.getDayOfWeek() == DayOfWeek.TUESDAY) {
-            result.add(new NewsBlock("orankenti1", date.atTime(5, 0), 3));
+            result.add(new NewsBlock("orankenti1", date.atTime(5, 0), 3 * 60));
             result.add(new NewsBlock("reggel", date.atTime(6, 48), 9 * 60 + 2 * 3 * 60));
             result.add(new NewsBlock("orankenti2", date.atTime(8, 0), 3 * 60));
             result.add(new NewsBlock("orankenti3", date.atTime(9, 57), 6 * 60));
