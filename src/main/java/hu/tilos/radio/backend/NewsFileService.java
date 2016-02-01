@@ -110,7 +110,7 @@ public class NewsFileService {
         Path tmp2Path = destinationDirPath.resolve(name + ".tmp2." + extension);
         String script = "#!/bin/bash\n" +
                 "set -e\n" +
-                "sox \"" + sourcePath + "\" -c 2 \"" + tmp1Path + "\"\n" +
+                "sox \"" + sourcePath + "\" -c 2 -r 44100 \"" + tmp1Path + "\"\n" +
                 "sox \"" + tmp1Path + "\" \"" + tmp2Path + "\" silence 1 0.1 0.1% reverse silence 1 0.1 0.1% reverse\n" +
                 "sox --norm \"" + tmp2Path + "\" \"" + destinationPath + "\"";
         scriptExecutor.executeScript(script, "/tmp", "fileimport");
