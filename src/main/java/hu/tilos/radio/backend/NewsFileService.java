@@ -67,6 +67,18 @@ public class NewsFileService {
         });
     }
 
+    public void delete(String id) {
+        NewsFile one = newsFileRepository.findOne(id);
+        try {
+            Files.delete(getInputPath().resolve(one.getPath()));
+            Files.delete(getImportPath().resolve(one.getPath()));
+        } catch (IOException e) {
+            LOG.error("Can't delete file", e);
+        }
+        newsFileRepository.delete(id);
+
+    }
+
     private void storeFiles(List<Path> files) {
         for (Path file : files) {
             try {

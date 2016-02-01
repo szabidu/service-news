@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 @Service
 public class UploadService {
@@ -23,7 +24,7 @@ public class UploadService {
 
     public void upload(String category, MultipartFile file) {
         try {
-            Files.copy(file.getInputStream(), Paths.get(importDir).resolve(category).resolve(file.getOriginalFilename()));
+            Files.copy(file.getInputStream(), Paths.get(importDir).resolve(category).resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
             newsFileService.importNewFiles();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
