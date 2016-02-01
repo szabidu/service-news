@@ -107,10 +107,10 @@ public class NewsBlockService {
         List<NewsBlock> scheduledBlocks = getBlocks(LocalDate.now());
         scheduledBlocks.forEach(block -> {
             long untilThat = now.until(block.getDate(), ChronoUnit.MINUTES);
-            if (untilThat > 0 && untilThat < 120 && block.getPath() == null) {
+            if (untilThat > 0 && untilThat < 6 * 60 && block.getPath() == null) {
                 generate(block);
                 LOG.info("Mp3 file is generated for " + block.getDate() + "/" + block.getName());
-            } else if (block.getFiles().size() == 0 && untilThat >= 120 && untilThat < 240) {
+            } else if (block.getFiles().size() == 0 && untilThat >= 6 * 60 && untilThat < 8 * 60) {
                 drawFiles(block);
                 newsBlockRepository.save(block);
                 LOG.info("News files are selected for " + block.getDate() + "/" + block.getName());
