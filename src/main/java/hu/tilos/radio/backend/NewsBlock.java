@@ -1,6 +1,5 @@
 package hu.tilos.radio.backend;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,7 +9,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -41,6 +39,13 @@ public class NewsBlock {
 
     private String path;
 
+    private String backgroundPath = "hirekzene.wav";
+
+    private boolean withSeparatorSignal = true;
+
+    private String signalType;
+
+
     public NewsBlock() {
     }
 
@@ -48,6 +53,43 @@ public class NewsBlock {
         this.name = name;
         this.date = date;
         this.expectedDuration = expectedDuration;
+    }
+
+
+    public boolean isWithSeparatorSignal() {
+        return withSeparatorSignal;
+    }
+
+    public NewsBlock setWithSeparatorSignal(boolean withSeparatorSignal) {
+        this.withSeparatorSignal = withSeparatorSignal;
+        return this;
+    }
+
+    public static DateTimeFormatter getDataBasedPath() {
+        return dataBasedPath;
+    }
+
+    public static void setDataBasedPath(DateTimeFormatter dataBasedPath) {
+        NewsBlock.dataBasedPath = dataBasedPath;
+    }
+
+    public String getSignalType() {
+        return signalType;
+    }
+
+    public NewsBlock setSignalType(String signalType) {
+        this.signalType = signalType;
+        return this;
+    }
+
+    public String getBackgroundPath() {
+        return backgroundPath;
+
+    }
+
+    public NewsBlock setBackgroundPath(String backgroundPath) {
+        this.backgroundPath = backgroundPath;
+        return this;
     }
 
     public String getPath() {

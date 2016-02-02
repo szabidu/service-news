@@ -53,6 +53,9 @@ public class NewsBlockService {
     @Inject
     private Scheduler scheduler;
 
+    @Inject
+    private NewsSignalService signalService;
+
     public Path getInputDirPath() {
         return Paths.get(inputDir);
     }
@@ -125,8 +128,10 @@ public class NewsBlockService {
 
     private void selectFiles(NewsBlock block, List<NewsFile> files) {
         List<NewsFile> selectedFiles = new ArrayList<>();
-        List<NewsFile> availableFiles = files.stream().filter(file -> file.getExpiration().isAfter(block.getDate())).collect(Collectors.toList());
-        while (durationOf(selectedFiles) + 2 * 20 + (selectedFiles.size() * 3) < block.getExpectedDuration()) {
+        List<NewsFile> availableFiles = files.stream().filter(file -> {
+            return file.getExpiration().isAfter(block.getDate()) && (file.getValidFrom() == null || file.getValidFrom().isBefore(block.getDate()));
+        }).collect(Collectors.toList());
+        while (durationOf(selectedFiles) + 2 * signalService.getSignal(block.getSignalType()).getSumLength() + (selectedFiles.size() * 3) < block.getExpectedDuration()) {
             NewsFile one = pickOne(availableFiles);
             if (one != null) {
                 selectedFiles.add(one);
@@ -230,7 +235,7 @@ public class NewsBlockService {
         b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
         String lastCategory = null;
         for (NewsFile file : block.getFiles()) {
-            if (lastCategory == null || !lastCategory.equals(file.getCategory())) {
+            if ((lastCategory == null || !lastCategory.equals(file.getCategory())) && block.isWithSeparatorSignal()) {
                 Path signalPath = Paths.get(workDir, "signal", file.getCategory() + ".wav");
                 if (Files.exists(signalPath)) {
                     b.append("sox $TMPDIR/hirekeddig.wav \"" + signalPath + "\" $SIGNALDIR/silence3.wav $TMPDIR/temp.wav\n");
@@ -241,12 +246,16 @@ public class NewsBlockService {
             b.append("mv $TMPDIR/temp.wav $TMPDIR/hirekeddig.wav\n");
             lastCategory = file.getCategory();
         }
+
+        Path introPath = getSignalPath().resolve(signalService.getSignal(block.getSignalType()).getIntroPath());
+        Path outroPath = getSignalPath().resolve(signalService.getSignal(block.getSignalType()).getOutroPath());
+
         b.append("sox $TMPDIR/hirekeddig.wav $SIGNALDIR/silence3.wav $TMPDIR/hireketmondunk.wav\n" +
-                "sox $SIGNALDIR/hirekzene.mp3 $TMPDIR/zenemost.wav trim 0 $(soxi -s $TMPDIR/hireketmondunk.wav)s \n" +
+                "sox " + getSignalPath().resolve(block.getBackgroundPath()) + " $TMPDIR/zenemost.wav trim 0 $(soxi -s $TMPDIR/hireketmondunk.wav)s \n" +
                 "sox -m $TMPDIR/zenemost.wav $TMPDIR/hireketmondunk.wav $TMPDIR/zeneshirek.wav\n" +
-                "sox $SIGNALDIR/Hirek_intro.wav $TMPDIR/zeneshirek.wav $TMPDIR/hirek_eleje.wav splice -q $(soxi -D $SIGNALDIR/Hirek_intro.wav),2\n" +
+                "sox " + introPath + " $TMPDIR/zeneshirek.wav $TMPDIR/hirek_eleje.wav splice -q $(soxi -D " + introPath + "),2\n" +
                 "mkdir -p " + destinationFilePath.getParent() + "\n" +
-                "sox $TMPDIR/hirek_eleje.wav $SIGNALDIR/Hirek_outro.wav " + destinationFilePath + " splice -q $(soxi -D $TMPDIR/hirek_eleje.wav),2\n");
+                "sox $TMPDIR/hirek_eleje.wav " + outroPath + " " + destinationFilePath + " splice -q $(soxi -D $TMPDIR/hirek_eleje.wav),2\n");
         return b.toString();
     }
 
@@ -280,4 +289,13 @@ public class NewsBlockService {
         }
 
     }
+
+    public Path getWorkDirPath() {
+        return Paths.get(workDir);
+    }
+
+    public Path getSignalPath() {
+        return Paths.get(workDir).resolve("signal");
+    }
+
 }

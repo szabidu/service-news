@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -90,7 +91,11 @@ public class NewsFileService {
                 newsFile.setDuration(calculateDuration(file));
                 newsFile.setCreated(getCreationDate(getInputPath().resolve(file)));
                 newsFile.setCategory(file.iterator().next().toString());
-                newsFile.setExpiration(newsFile.getCreated().plusDays(detectExpiration(newsFile.getPath().toString())));
+
+                int validDays = detectExpiration(newsFile.getPath().toString());
+                newsFile.setValidFrom(LocalDate.now().atTime(0, 0).plusDays(1));
+                newsFile.setExpiration(newsFile.getValidFrom().plusDays(validDays));
+
                 newsFileRepository.save(newsFile);
             } catch (Exception ex) {
                 LOG.error("Can't persist " + file, ex);

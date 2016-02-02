@@ -28,6 +28,10 @@ public class NewsFile {
     @JsonSerialize(using = LocalDateTimeJsonSerializer.class)
     private LocalDateTime expiration;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonSerialize(using = LocalDateTimeJsonSerializer.class)
+    private LocalDateTime validFrom;
+
     public String getId() {
         return id;
     }
@@ -58,6 +62,14 @@ public class NewsFile {
 
     public void setCreated(LocalDateTime created) {
         this.created = created;
+    }
+
+    public LocalDateTime getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(LocalDateTime validFrom) {
+        this.validFrom = validFrom;
     }
 
     public String getCategory() {
