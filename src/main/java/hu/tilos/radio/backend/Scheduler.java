@@ -44,11 +44,11 @@ public class Scheduler {
 
             for (int i = 5; i < 23; i++) {
                 if (i != 7 && i != 19) {
-                    result.add(new NewsBlock("orankenti" + i + "-3", date.atTime(i, 0), 3 * 60)
+                    result.add(new NewsBlock("orankenti" + i + "-3perces", date.atTime(i, 0), 3 * 60)
                             .setWithSeparatorSignal(false)
                             .setBackgroundPath("bangkok.wav")
                             .setSignalType("short"));
-                    result.add(new NewsBlock("orankenti" + i + "-3", date.atTime(i, 0), 6 * 60)
+                    result.add(new NewsBlock("orankenti" + i + "-3perces", date.atTime(i, 0), 6 * 60)
                             .setWithSeparatorSignal(false)
                             .setBackgroundPath("bangkok.wav")
                             .setSignalType("short"));
