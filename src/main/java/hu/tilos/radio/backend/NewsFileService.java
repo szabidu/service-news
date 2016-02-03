@@ -93,7 +93,7 @@ public class NewsFileService {
                 newsFile.setCategory(file.iterator().next().toString());
 
                 int validDays = detectExpiration(newsFile.getPath().toString());
-                newsFile.setValidFrom(LocalDate.now().atTime(0, 0).plusDays(1));
+                newsFile.setValidFrom(LocalDate.now().atTime(0, 0).plusDays(2));
                 newsFile.setExpiration(newsFile.getValidFrom().plusDays(validDays));
 
                 newsFileRepository.save(newsFile);
