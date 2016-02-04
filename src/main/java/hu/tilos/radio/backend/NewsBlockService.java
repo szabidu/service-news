@@ -122,8 +122,12 @@ public class NewsBlockService {
 
     }
 
-    private void drawFiles(NewsBlock block) {
-        selectFiles(block, newsFileService.getFiles());
+    public void drawFiles(NewsBlock block) {
+        List<NewsFile> files = newsFileService.getFiles();
+        if (block.getExpectedDuration() < 5 * 60) {
+            files = files.stream().filter(newsFile -> !newsFile.getCategory().equals("idojaras") && !newsFile.getCategory().equals("sport")).collect(Collectors.toList());
+        }
+        selectFiles(block, files);
     }
 
     private void selectFiles(NewsBlock block, List<NewsFile> files) {
@@ -193,7 +197,7 @@ public class NewsBlockService {
     public NewsBlock draw(LocalDate date, String name) {
         NewsBlock block = newsBlockRepository.findOneByDateBetweenAndName(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), name).findGeneratedFiled(getOutputDirPath());
         if (block != null) {
-            selectFiles(block, newsFileService.getFiles());
+            drawFiles(block);
             if (block.getPath() != null) {
                 try {
                     Files.delete(getOutputDirPath().resolve(block.getPath()));
@@ -268,7 +272,7 @@ public class NewsBlockService {
 
     public void generate(NewsBlock block) {
         if (block.getFiles().isEmpty()) {
-            selectFiles(block, newsFileService.getFiles());
+            drawFiles(block);
             newsBlockRepository.save(block);
         }
         String generateScript = getGenerateScript(block);
@@ -298,4 +302,11 @@ public class NewsBlockService {
         return Paths.get(workDir).resolve("signal");
     }
 
+    public void setNewsFileService(NewsFileService newsFileService) {
+        this.newsFileService = newsFileService;
+    }
+
+    public void setSignalService(NewsSignalService signalService) {
+        this.signalService = signalService;
+    }
 }
