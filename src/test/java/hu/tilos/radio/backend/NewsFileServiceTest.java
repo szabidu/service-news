@@ -15,7 +15,7 @@ public class NewsFileServiceTest {
 
         Assert.assertEquals(2,service.detectExpiration("(2)valami.mp3"));
         Assert.assertEquals(3,service.detectExpiration("valami(3).mp3"));
-        Assert.assertEquals(1,service.detectExpiration("valami .mp3"));
+        Assert.assertEquals(2,service.detectExpiration("valami .mp3"));
 
 
     }

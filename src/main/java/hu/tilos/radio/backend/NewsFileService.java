@@ -102,7 +102,7 @@ public class NewsFileService {
                 newsFile.setCategory(file.iterator().next().toString());
 
                 int validDays = detectExpiration(newsFile.getPath().toString());
-                newsFile.setValidFrom(LocalDate.now().atTime(0, 0).plusDays(2));
+                newsFile.setValidFrom(LocalDate.now().atTime(0, 0).plusDays(1));
                 newsFile.setExpiration(newsFile.getValidFrom().plusDays(validDays));
 
                 newsFileRepository.save(newsFile);
@@ -138,7 +138,7 @@ public class NewsFileService {
         if (matcher.matches()) {
             return Integer.parseInt(matcher.group(1));
         } else {
-            return 1;
+            return 2;
         }
 
     }
