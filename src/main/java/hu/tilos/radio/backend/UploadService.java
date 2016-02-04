@@ -24,7 +24,9 @@ public class UploadService {
 
     public void upload(String category, MultipartFile file) {
         try {
-            Files.copy(file.getInputStream(), Paths.get(importDir).resolve(category).resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
+            Path destinationPath = Paths.get(importDir).resolve(category).resolve(file.getOriginalFilename());
+            Files.createDirectories(destinationPath.getParent());
+            Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
             newsFileService.importNewFiles();
         } catch (Exception ex) {
             throw new RuntimeException(ex);

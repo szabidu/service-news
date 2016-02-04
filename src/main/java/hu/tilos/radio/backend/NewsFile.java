@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,6 +19,7 @@ public class NewsFile {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonSerialize(using = LocalDateTimeJsonSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeJsonDeserializer.class)
     private LocalDateTime created;
 
     private String category;
@@ -26,10 +28,12 @@ public class NewsFile {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonSerialize(using = LocalDateTimeJsonSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeJsonDeserializer.class)
     private LocalDateTime expiration;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonSerialize(using = LocalDateTimeJsonSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeJsonDeserializer.class)
     private LocalDateTime validFrom;
 
     public String getId() {

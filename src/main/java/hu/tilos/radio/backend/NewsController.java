@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
-import javax.websocket.server.PathParam;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,6 +30,19 @@ public class NewsController {
 
     @PreAuthorize("hasRole('ROLE_AUTHOR')")
     @RequestMapping(value = "/api/v1/news/file/{id}")
+    public NewsFile get(@PathVariable String id) {
+        return fileService.get(id);
+    }
+
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
+    @RequestMapping(value = "/api/v1/news/file/{id}", method = RequestMethod.PUT)
+    public NewsFile get(@RequestBody NewsFile file) {
+        return fileService.update(file);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
+    @RequestMapping(value = "/api/v1/news/file/{id}", method = RequestMethod.DELETE)
     public void deleteFile(@PathVariable String id) {
         fileService.delete(id);
     }

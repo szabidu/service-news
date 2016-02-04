@@ -60,6 +60,15 @@ public class NewsFileService {
         return getRecentFiles();
     }
 
+    public NewsFile update(NewsFile file) {
+        newsFileRepository.save(file);
+        return get(file.getId());
+    }
+
+    public NewsFile get(String id) {
+        return newsFileRepository.findOne(id);
+    }
+
     private void cleanup(List<NewsFile> recentFiles) {
         recentFiles.forEach(newsFile -> {
             if (!Files.exists(getInputPath().resolve(newsFile.getPath()))) {
