@@ -100,12 +100,6 @@ public class Scheduler {
         addShort(date, result, "3perces-21-22-havolt", 21, 57, 3);
     }
 
-    private void addShort(LocalDate date, List<NewsBlock> result, String name, int hour, int minute, int second, int duration) {
-        result.add(new NewsBlock(name, date.atTime(hour, minute, second), duration * 60)
-                .setWithSeparatorSignal(false)
-                .setBackgroundPath("bangkok.wav")
-                .setSignalType("short"));
-    }
 
     private void createSunday(LocalDate date, List<NewsBlock> result) {
         addShort(date, result, "3perces-5", 5, 0, 6);
@@ -115,16 +109,11 @@ public class Scheduler {
         addShort(date, result, "3perces-9-10", 9, 57, 6);
         addShort(date, result, "3perces-9-10-havolt", 9, 57, 3);
         addShort(date, result, "3perces-11", 10, 28, 30, 3);
-        addShort(date, result, "3perces-11", 11, 28, 30, 3);
         addShort(date, result, "3perces-13", 13, 28, 30, 3);
         addShort(date, result, "3perces-14-15", 14, 57, 0, 6);
         addShort(date, result, "3perces-14-15-havolt", 14, 57, 0, 3);
-        addShort(date, result, "3perces-14-15", 14, 57, 6);
-        addShort(date, result, "3perces-16", 16, 0, 3);
-        addShort(date, result, "3perces-14-15-havolt", 14, 57, 3);
         addShort(date, result, "3perces-16", 16, 0, 3);
         addShort(date, result, "3perces-17", 17, 0, 3);
-        addShort(date, result, "3perces-18", 18, 28, 30, 3);
         result.add(new NewsBlock("este", date.atTime(18, 24), 9 * 60 + 3 * 60));
         addShort(date, result, "3perces-19-20", 19, 57, 6);
         addShort(date, result, "3perces-19-20-havolt", 19, 57, 3);
@@ -137,4 +126,10 @@ public class Scheduler {
         addShort(date, result, name, hour, minute, 0, duration);
     }
 
+    private void addShort(LocalDate date, List<NewsBlock> result, String name, int hour, int minute, int second, int duration) {
+        result.add(new NewsBlock(name, date.atTime(hour, minute, second), duration * 60)
+                .setWithSeparatorSignal(false)
+                .setBackgroundPath("bangkok.wav")
+                .setSignalType("short"));
+    }
 }
