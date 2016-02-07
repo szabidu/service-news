@@ -58,10 +58,10 @@ public class Scheduler {
         } else {
             addShort(date, result, "3perces-13", 13, 28, 30, 3);
         }
-        addShort(date, result, "3perces-14-15", 14, 57, 0, 3);
+        addShort(date, result, "3perces-14-15", 14, 57, 0, 6);
         addShort(date, result, "3perces-14-15-havolt", 14, 57, 3, "Ha volt az előzőben saját");
 
-        addShort(date, result, "3perces-16-17", 16, 57, 0, 3);
+        addShort(date, result, "3perces-16-17", 16, 57, 0, 6);
         addShort(date, result, "3perces-16-17-havolt", 16, 57, 3, "Ha volt az előzőben saját");
 
         addShort(date, result, "3perces-18", 18, 28, 30, 3);
