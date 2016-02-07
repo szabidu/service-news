@@ -45,6 +45,8 @@ public class NewsBlock {
 
     private String signalType;
 
+    private String description;
+
 
     public NewsBlock() {
     }
@@ -55,6 +57,12 @@ public class NewsBlock {
         this.expectedDuration = expectedDuration;
     }
 
+    public NewsBlock(String name, LocalDateTime date, int expectedDuration, String description) {
+        this.name = name;
+        this.date = date;
+        this.expectedDuration = expectedDuration;
+        this.description = description;
+    }
 
     public boolean isWithSeparatorSignal() {
         return withSeparatorSignal;
