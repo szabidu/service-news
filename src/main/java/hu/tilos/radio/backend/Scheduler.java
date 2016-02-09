@@ -95,7 +95,7 @@ public class Scheduler {
         addShort(date, result, "3perces-17-18", 17, 57, 6);
         addShort(date, result, "3perces-17-18-havolt", 17, 57, 3);
 
-        result.add(new NewsBlock("este", date.atTime(18, 48), 9 * 60 + 3 * 60));
+        result.add(new NewsBlock("este", date.atTime(19, 48), 9 * 60 + 3 * 60));
 
         addShort(date, result, "3perces-20-21", 20, 57, 6);
         addShort(date, result, "3perces-20-21-havolt", 20, 57, 3);
