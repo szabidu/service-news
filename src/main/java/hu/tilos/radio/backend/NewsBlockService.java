@@ -282,14 +282,16 @@ public class NewsBlockService {
 
     public void deleteDay(LocalDate date) {
         for (NewsBlock block : getBlocks(date)) {
-            if (block.getPath() != null) {
-                try {
-                    Files.delete(getOutputDirPath().resolve(block.getPath()));
-                } catch (IOException e) {
-                    LOG.error("Can't detele file: " + block.getPath(), e);
+            if (block.getLiveAt() == null || block.getLiveAt().size() == 0) {
+                if (block.getPath() != null) {
+                    try {
+                        Files.delete(getOutputDirPath().resolve(block.getPath()));
+                    } catch (IOException e) {
+                        LOG.error("Can't detele file: " + block.getPath(), e);
+                    }
                 }
+                newsBlockRepository.delete(block);
             }
-            newsBlockRepository.delete(block);
         }
 
     }

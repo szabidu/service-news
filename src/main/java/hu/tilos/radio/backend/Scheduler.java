@@ -73,23 +73,35 @@ public class Scheduler {
     }
 
     private void createTuesday(LocalDate date, List<NewsBlock> result) {
-        result.add(new NewsBlock("orankenti1", date.atTime(5, 0), 3 * 60));
-        result.add(new NewsBlock("reggel", date.atTime(6, 48), 9 * 60 + 2 * 3 * 60));
-        result.add(new NewsBlock("orankenti2", date.atTime(8, 0), 3 * 60));
-        result.add(new NewsBlock("orankenti3", date.atTime(9, 57), 6 * 60));
-        result.add(new NewsBlock("orankenti3-potrovid", date.atTime(9, 57), 3 * 60));
-        result.add(new NewsBlock("orankenti4", date.atTime(11, 57), 6 * 60));
-        result.add(new NewsBlock("orankenti4-potrovid", date.atTime(11, 57), 3 * 60));
-        result.add(new NewsBlock("orankenti5", date.atTime(13, 57, 0), 6 * 60));
-        result.add(new NewsBlock("orankenti5-potrovid", date.atTime(13, 57, 0), 2 * 60));
-        result.add(new NewsBlock("orankenti6", date.atTime(14, 57, 30), 6 * 60));
-        result.add(new NewsBlock("orankenti6-potrovid", date.atTime(14, 57, 30), 3 * 60));
-        result.add(new NewsBlock("orankenti7", date.atTime(16, 28, 30), 3 * 60));
-        result.add(new NewsBlock("orankenti8", date.atTime(17, 57), 6 * 60));
-        result.add(new NewsBlock("orankenti8-potrovid", date.atTime(17, 57), 3 * 60));
-        result.add(new NewsBlock("este", date.atTime(19, 48), 12 * 60 + +2 * 3 * 30));
-        result.add(new NewsBlock("orankenti10", date.atTime(21, 00), 3 * 60));
-        result.add(new NewsBlock("orankenti11", date.atTime(22, 00), 3 * 60));
+        addShort(date, result, "3perces-5", 5, 0, 6);
+        addShort(date, result, "3perces-6", 6, 0, 3);
+        result.add(new NewsBlock("reggel", date.atTime(7, 27), 9 * 60 + 3 * 60));
+
+        addShort(date, result, "3perces-8", 8, 28, 30, 3);
+
+        addShort(date, result, "3perces-9-10", 9, 57, 6);
+        addShort(date, result, "3perces-9-10-havolt", 9, 57, 3);
+
+        addShort(date, result, "3perces-11-12", 11, 57, 6);
+        addShort(date, result, "3perces-11-12-havolt", 11, 57, 3);
+
+        addShort(date, result, "3perces-13-14", 13, 57, 6);
+        addShort(date, result, "3perces-13-14-havolt", 13, 57, 3);
+
+        addShort(date, result, "3perces-15", 15, 0, 3);
+
+        addShort(date, result, "3perces-16", 16, 28, 30, 3);
+
+        addShort(date, result, "3perces-17-18", 17, 57, 6);
+        addShort(date, result, "3perces-17-18-havolt", 17, 57, 3);
+
+        result.add(new NewsBlock("este", date.atTime(18, 48), 9 * 60 + 3 * 60));
+
+        addShort(date, result, "3perces-20-21", 20, 57, 6);
+        addShort(date, result, "3perces-20-21-havolt", 20, 57, 3);
+
+        addShort(date, result, "3perces-22", 22, 0, 3);
+
     }
 
     private void createSaturday(LocalDate date, List<NewsBlock> result) {
