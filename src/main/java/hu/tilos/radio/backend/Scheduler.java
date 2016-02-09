@@ -75,7 +75,7 @@ public class Scheduler {
     private void createTuesday(LocalDate date, List<NewsBlock> result) {
         addShort(date, result, "3perces-5", 5, 0, 6);
         addShort(date, result, "3perces-6", 6, 0, 3);
-        result.add(new NewsBlock("reggel", date.atTime(7, 27), 9 * 60 + 3 * 60));
+        result.add(new NewsBlock("reggel", date.atTime(6, 54), 9 * 60));
 
         addShort(date, result, "3perces-8", 8, 28, 30, 3);
 
