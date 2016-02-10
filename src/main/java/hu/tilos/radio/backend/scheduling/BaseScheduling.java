@@ -23,4 +23,23 @@ public abstract class BaseScheduling {
                 .setBackgroundPath("bangkok.wav")
                 .setSignalType("short"));
     }
+
+
+    protected void singleBlock(LocalDate date, List<NewsBlock> result, int hour, int min) {
+        addShort(date, result, "3perces-" + hour, hour, 28, 30, 3);
+    }
+
+    protected void singleBlock(LocalDate date, List<NewsBlock> result, int hour) {
+        addShort(date, result, "3perces-" + hour, hour, 0, 3);
+    }
+
+    protected void doubleBlock(LocalDate date, List<NewsBlock> result, int hour) {
+        addShort(date, result, "3perces-" + (hour - 1) + "-" + hour, hour - 1, 57, 6);
+        addShort(date, result, "3perces-" + (hour - 1) + "-" + hour + "-havolt", hour, 0, 3);
+    }
+
+    protected void singleBlockPre(LocalDate date, List<NewsBlock> result, int hour) {
+        addShort(date, result, "3perces-" + (hour - 1), hour - 1, 57, 3);
+
+    }
 }

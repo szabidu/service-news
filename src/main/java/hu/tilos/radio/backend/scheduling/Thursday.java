@@ -10,7 +10,7 @@ public class Thursday extends BaseScheduling {
     public void createBlocks(LocalDate date, List<NewsBlock> result, boolean odd) {
         result.add(new NewsBlock("reggel", date.atTime(5, 0), 12 * 60));
 
-        addShort(date, result, "3perces-6-7", 6, 54, 9, "2*3 perc + 3 a 12-ből");
+        addShort(date, result, "3perces-6-7", 6, 57, 6);
 
         addShort(date, result, "3perces-8", 8, 28, 30, 3);
 
@@ -30,8 +30,9 @@ public class Thursday extends BaseScheduling {
         addShort(date, result, "3perces-17-18", 17, 57, 6);
         addShort(date, result, "3perces-17-18-havolt", 17, 57, 3);
 
-        result.add(new NewsBlock("este", date.atTime(19, 48), 9 * 60 + 3 * 60));
-        
+        addShort(date, result, "3perces-19", 19, 30, 3);
+        result.add(new NewsBlock("este", date.atTime(19, 48), 12 * 60));
+
         addShort(date, result, "3perces-20-21", 20, 57, 6);
         addShort(date, result, "3perces-20-21-havolt", 20, 57, 3);
 
