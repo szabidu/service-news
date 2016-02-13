@@ -225,19 +225,22 @@ public class NewsBlockService {
 
 
     public void deleteDay(LocalDate date) {
-        for (NewsBlock block : getBlocks(date)) {
-            if (block.getLiveAt() == null || block.getLiveAt().size() == 0) {
-                if (block.getPath() != null) {
-                    try {
-                        Files.delete(getOutputDirPath().resolve(block.getPath()));
-                    } catch (IOException e) {
-                        LOG.error("Can't detele file: " + block.getPath(), e);
+        LocalDate d = date;
+        for (int i = 0; i < 10; i++) {
+            for (NewsBlock block : getBlocks(date)) {
+                if (block.getLiveAt() == null || block.getLiveAt().size() == 0) {
+                    if (block.getPath() != null) {
+                        try {
+                            Files.delete(getOutputDirPath().resolve(block.getPath()));
+                        } catch (IOException e) {
+                            LOG.error("Can't detele file: " + block.getPath(), e);
+                        }
                     }
+                    newsBlockRepository.delete(block);
                 }
-                newsBlockRepository.delete(block);
             }
+            d = d.plusDays(1);
         }
-
     }
 
     public Path getWorkDirPath() {

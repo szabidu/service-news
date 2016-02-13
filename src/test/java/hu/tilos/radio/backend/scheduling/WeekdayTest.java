@@ -46,13 +46,18 @@ public class WeekdayTest {
 
     public void test(BaseScheduling scheduling, LocalDate localDate) {
 
-
         List<NewsBlock> blocks = scheduling.createBlocks(localDate, false);
 
         int sum = blocks.stream().filter(block -> !block.getName().contains("havolt")).mapToInt(NewsBlock::getExpectedDuration).sum();
-        blocks.forEach(block -> {
-            System.out.println(block.getDate() + " " + block.getName() + " " + (block.getExpectedDuration() / 60));
-        });
+//        blocks.forEach(block -> {
+//            System.out.println(block.getDate() + " " + block.getName() + " " + (block.getExpectedDuration() / 60));
+//        });
+        Assert.assertEquals((21 + 18 * 3), sum / 60);
+
+        blocks = scheduling.createBlocks(localDate, true);
+
+        sum = blocks.stream().filter(block -> !block.getName().contains("havolt")).mapToInt(NewsBlock::getExpectedDuration).sum();
+
         Assert.assertEquals((21 + 18 * 3), sum / 60);
 
 
