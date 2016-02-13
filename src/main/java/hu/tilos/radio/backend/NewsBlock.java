@@ -5,7 +5,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,6 +46,7 @@ public class NewsBlock {
 
     private String description;
 
+    private String selection = "default";
 
     public NewsBlock() {
     }
@@ -150,6 +150,24 @@ public class NewsBlock {
 
     public int getExpectedDuration() {
         return expectedDuration;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public NewsBlock setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public String getSelection() {
+        return selection;
+    }
+
+    public NewsBlock setSelection(String selection) {
+        this.selection = selection;
+        return this;
     }
 
     public void setExpectedDuration(int expectedDuration) {

@@ -16,15 +16,15 @@ public class Friday implements BaseScheduling {
                 .singleBlockPre(7)
                 .doubleBlock(8)
                 .doubleBlock(10)
-                .singleBlock(11, 30)
-                .singleBlock(12, 30)
-                .singleBlock(13, 30)
-                .singleBlock(14, 30)
+                .singleBlockSymmetric(11, 30)
+                .singleBlockSymmetric(12, 30)
+                .singleBlockSymmetric(13, 30)
+                .singleBlockSymmetric(14, 30)
                 .doubleBlock(16)
                 .doubleBlock(18)
                 .addShort("3perces-19", 19, 30, 3)
                 .doubleBlock(21)
-                .singleBlock(22)
+                .singleBlockAt(22)
                 .build();
 
     }

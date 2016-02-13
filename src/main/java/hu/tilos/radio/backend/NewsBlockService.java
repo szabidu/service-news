@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend;
 
 import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
+import hu.tilos.radio.backend.selection.Selector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,24 +9,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.*;
-import java.nio.file.DirectoryStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class NewsBlockService {
 
-    private Random random = new Random();
 
     private static final Logger LOG = LoggerFactory.getLogger(NewsBlockService.class);
 
@@ -42,9 +38,6 @@ public class NewsBlockService {
     NewsFileService newsFileService;
 
     @Inject
-    private NewsFileRepository newsFileRepository;
-
-    @Inject
     private NewsBlockRepository newsBlockRepository;
 
     @Inject
@@ -54,7 +47,11 @@ public class NewsBlockService {
     private Scheduler scheduler;
 
     @Inject
+    private List<Selector> selectors;
+
+    @Inject
     private NewsSignalService signalService;
+
 
     public Path getInputDirPath() {
         return Paths.get(inputDir);
@@ -124,74 +121,21 @@ public class NewsBlockService {
 
     public void drawFiles(NewsBlock block) {
         List<NewsFile> files = newsFileService.getFiles();
-        if (block.getExpectedDuration() < 5 * 60) {
-            files = files.stream().filter(newsFile -> !newsFile.getCategory().equals("idojaras") && !newsFile.getCategory().equals("sport")).collect(Collectors.toList());
-        }
-        selectFiles(block, files);
-    }
+        final String selection = block.getSelection() == null ? "default" : block.getSelection();
+        Selector selector1 = selectors.stream().filter(selector -> selector.getClass().getSimpleName().toLowerCase().replace("selector", "").equals(selection)).findFirst().get();
 
-    private void selectFiles(NewsBlock block, List<NewsFile> files) {
-        List<NewsFile> selectedFiles = new ArrayList<>();
-        List<NewsFile> availableFiles = files.stream().filter(file -> {
-            return file.getExpiration().isAfter(block.getDate()) && (file.getValidFrom() == null || file.getValidFrom().isBefore(block.getDate()));
-        }).collect(Collectors.toList());
-        while (durationOf(selectedFiles) + 2 * signalService.getSignal(block.getSignalType()).getSumLength() + (selectedFiles.size() * 3) < block.getExpectedDuration()) {
-            NewsFile one = pickOne(availableFiles);
-            if (one != null) {
-                selectedFiles.add(one);
-                availableFiles.remove(one);
-            } else {
-                break;
-            }
-
-        }
-        block.getFiles().clear();
-        sort(selectedFiles).forEach(block::addFile);
-
-
-    }
-
-    private int durationOf(List<NewsFile> selectedFiles) {
-        return selectedFiles.stream().mapToInt(NewsFile::getDuration).sum();
-    }
-
-    public List<NewsFile> sort(List<NewsFile> files) {
-        List<NewsFile> result = new ArrayList<>();
-        result.addAll(files);
-        Collections.sort(result, new Comparator<NewsFile>() {
-            @Override
-            public int compare(NewsFile o1, NewsFile o2) {
-                return getWeight(o1.getCategory()).compareTo(getWeight(o2.getCategory()));
-            }
-        });
-        return result;
-    }
-
-    public Integer getWeight(String category) {
-        if (category.equals("fontos")) {
-            return 0;
-        } else if (category.equals("kozerdeku")) {
-            return 1;
-        } else if (category.equals("szines")) {
-            return 300;
-        } else if (category.equals("idojaras")) {
-            return 301;
-        } else {
-            return Integer.valueOf((int) category.charAt(0));
-        }
-    }
-
-    private NewsFile pickOne(List<NewsFile> files) {
-        if (files.size() < 1) {
-            return null;
-        } else {
-            List<NewsFile> importantList = files.stream().filter(file -> file.getCategory().equals("fontos")).collect(Collectors.toList());
-            if (!importantList.isEmpty()) {
-                return importantList.get(random.nextInt(importantList.size()));
-            } else {
-                return files.get(random.nextInt(files.size()));
+        List<NewsFile> newsFiles = null;
+        int minDuration = Integer.MAX_VALUE;
+        for (int i = 0; i < 3; i++) {
+            List<NewsFile> onePossibleSelection = selector1.selectFor(block, files);
+            int duration = NewsFile.durationOf(onePossibleSelection);
+            if (duration < minDuration) {
+                newsFiles = onePossibleSelection;
+                minDuration = duration;
             }
         }
+
+        block.setFiles(newsFiles);
     }
 
     public NewsBlock draw(LocalDate date, String name) {
@@ -310,5 +254,9 @@ public class NewsBlockService {
 
     public void setSignalService(NewsSignalService signalService) {
         this.signalService = signalService;
+    }
+
+    public NewsFileService getNewsFileService() {
+        return newsFileService;
     }
 }

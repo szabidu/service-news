@@ -6,8 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Document(collection = "newsfile")
@@ -35,6 +35,19 @@ public class NewsFile {
     @JsonSerialize(using = LocalDateTimeJsonSerializer.class)
     @JsonDeserialize(using = LocalDateTimeJsonDeserializer.class)
     private LocalDateTime validFrom;
+
+    public NewsFile() {
+    }
+
+    public NewsFile(String path, String category, int duration) {
+        this.path = path;
+        this.duration= duration;
+        this.category = category;
+        created = LocalDateTime.now();
+        validFrom = LocalDateTime.now().minusDays(1);
+        expiration = LocalDateTime.now().plusDays(1);
+
+    }
 
     public String getId() {
         return id;
@@ -103,5 +116,9 @@ public class NewsFile {
     @Override
     public int hashCode() {
         return Objects.hash(path);
+    }
+
+    public static int durationOf(List<NewsFile> selectedFiles) {
+        return selectedFiles.stream().mapToInt(NewsFile::getDuration).sum();
     }
 }

@@ -17,11 +17,11 @@ public class Sunday implements BaseScheduling {
                 .addShort("3perces-12-pot", LocalTime.of(12, 30), 3)
                 .addShort("3perces-13-pot", LocalTime.of(13, 27), 3)
                 .doubleBlock(15)
-                .singleBlock(16)
-                .singleBlock(17)
+                .singleBlockAt(16)
+                .singleBlockAt(17)
                 .addBlock("este", LocalTime.of(18, 24), 12)
                 .doubleBlock(20)
-                .singleBlock(21, 57)
+                .singleBlockSymmetric(21, 57)
                 .addShort("3perces-22-pot", LocalTime.of(22, 30), 3)
                 .build();
 

@@ -17,15 +17,15 @@ public class Monday implements BaseScheduling {
                 .doubleBlock(8)
                 .doubleBlock(10)
                 .addShort("3perces-11-pot", 11, 0, 3)
-                .singleBlock(12);
+                .singleBlockAt(12);
         if (odd) {
-            builder.singleBlock(13, 30);
+            builder.singleBlockSymmetric(13, 30);
         } else {
-            builder.singleBlock(13);
+            builder.singleBlockAt(13);
         }
         builder.doubleBlock(15)
                 .doubleBlock(17)
-                .singleBlock(18, 30)
+                .singleBlockAt(18, 30).withSelection("children")
                 .addBlock("este", LocalTime.of(19, 48), 9 + 3)
                 .doubleBlock(21)
                 .addShort("3perces-22-pot", 22, 0, 3);

@@ -34,17 +34,28 @@ public class BlockBuilder {
         result.add(new NewsBlock(name, date.atTime(hour, minute, second), duration * 60)
                 .setWithSeparatorSignal(false)
                 .setBackgroundPath("bangkok.wav")
+                .setSelection("short")
                 .setSignalType("short"));
         return this;
     }
 
-
-    protected BlockBuilder singleBlock(int hour, int min) {
-        addShort("3perces-" + hour, hour, 28, 30, 3);
+    public BlockBuilder withSelection(String selection) {
+        result.get(result.size() - 1).setSelection(selection);
         return this;
     }
 
-    protected BlockBuilder singleBlock(int hour) {
+    protected BlockBuilder singleBlockSymmetric(int hour, int min) {
+        LocalTime time = LocalTime.of(hour, min).minusMinutes(min);
+        addShort("3perces-" + hour, time.getHour(), time.getMinute(), time.getSecond(), 3);
+        return this;
+    }
+
+    protected BlockBuilder singleBlockAt(int hour, int min) {
+        addShort("3perces-" + hour, hour, min, 0, 3);
+        return this;
+    }
+
+    public BlockBuilder singleBlockAt(int hour) {
         addShort("3perces-" + hour, hour, 0, 3);
         return this;
     }
