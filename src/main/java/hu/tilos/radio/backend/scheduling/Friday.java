@@ -3,27 +3,31 @@ package hu.tilos.radio.backend.scheduling;
 import hu.tilos.radio.backend.NewsBlock;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
-public class Friday extends BaseScheduling {
+public class Friday implements BaseScheduling {
     @Override
-    public void createBlocks(LocalDate date, List<NewsBlock> result, boolean odd) {
-        result.add(new NewsBlock("reggel", date.atTime(5, 0), 12 * 60));
-        result.add(new NewsBlock("este", date.atTime(19, 48), 12 * 60));
+    public List<NewsBlock> createBlocks(LocalDate date, boolean odd) {
+        return new BlockBuilder(date)
+                .addBlock("reggel", LocalTime.of(5, 0), 12)
+                .addBlock("este", LocalTime.of(19, 48), 12)
 
-        singleBlockPre(date, result, 7);
-        doubleBlock(date, result, 8);
-        doubleBlock(date, result, 10);
-        singleBlock(date, result, 11, 30);
-        singleBlock(date, result, 12, 30);
-        singleBlock(date, result, 13, 30);
-        singleBlock(date, result, 14, 30);
-        doubleBlock(date, result, 16);
-        doubleBlock(date, result, 18);
-        addShort(date, result, "3perces-19", 19, 30, 3);
-        doubleBlock(date, result, 21);
-        singleBlock(date, result, 22);
+                .singleBlockPre(7)
+                .doubleBlock(8)
+                .doubleBlock(10)
+                .singleBlock(11, 30)
+                .singleBlock(12, 30)
+                .singleBlock(13, 30)
+                .singleBlock(14, 30)
+                .doubleBlock(16)
+                .doubleBlock(18)
+                .addShort("3perces-19", 19, 30, 3)
+                .doubleBlock(21)
+                .singleBlock(22)
+                .build();
 
     }
+
 
 }

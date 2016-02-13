@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +26,7 @@ public class Scheduler {
     }
 
     public List<NewsBlock> getScheduledBlocks(LocalDate date) {
-        List<NewsBlock> result = new ArrayList<>();
-
-        this.schedulings.get(date.getDayOfWeek()).createBlocks(date, result, true);
-        return result;
+        return this.schedulings.get(date.getDayOfWeek()).createBlocks(date, true);
 
     }
 
