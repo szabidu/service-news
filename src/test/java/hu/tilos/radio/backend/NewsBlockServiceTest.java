@@ -64,7 +64,7 @@ public class NewsBlockServiceTest {
         newsBlockService.drawFiles(valami);
 
         //then
-        Assert.assertEquals(4, valami.getFiles().size());
+        Assert.assertEquals(3, valami.getFiles().size());
     }
 
 
