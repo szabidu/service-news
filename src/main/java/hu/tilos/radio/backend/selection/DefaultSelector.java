@@ -1,8 +1,8 @@
 package hu.tilos.radio.backend.selection;
 
+import hu.tilos.radio.backend.NewsSignalService;
 import hu.tilos.radio.backend.block.NewsBlock;
 import hu.tilos.radio.backend.file.NewsFile;
-import hu.tilos.radio.backend.NewsSignalService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Service
 public class DefaultSelector implements Selector {
 
-    private Random random = new Random();
+    protected Random random = new Random();
 
     @Inject
     private NewsSignalService signalService;
@@ -77,10 +77,14 @@ public class DefaultSelector implements Selector {
             if (!importantList.isEmpty()) {
                 return importantList.get(random.nextInt(importantList.size()));
             } else {
-                return files.get(random.nextInt(files.size()));
+                files.sort((a, b) -> a.getCreated().compareTo(b.getCreated()) * -1);
+                if (files.size() > 0) {
+                    return files.get(0);
+                } else {
+                    return null;
+                }
             }
         }
     }
-
 
 }
