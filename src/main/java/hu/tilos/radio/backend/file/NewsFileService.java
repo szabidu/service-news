@@ -1,5 +1,6 @@
-package hu.tilos.radio.backend;
+package hu.tilos.radio.backend.file;
 
+import hu.tilos.radio.backend.block.NewsBlockRepository;
 import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,5 +1,9 @@
-package hu.tilos.radio.backend;
+package hu.tilos.radio.backend.block;
 
+import hu.tilos.radio.backend.file.NewsFileService;
+import hu.tilos.radio.backend.NewsSignalService;
+import hu.tilos.radio.backend.Scheduler;
+import hu.tilos.radio.backend.file.NewsFile;
 import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
 import hu.tilos.radio.backend.selection.Selector;
 import org.slf4j.Logger;
@@ -142,16 +146,20 @@ public class NewsBlockService {
         NewsBlock block = newsBlockRepository.findOneByDateBetweenAndName(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), name).findGeneratedFiled(getOutputDirPath());
         if (block != null) {
             drawFiles(block);
-            if (block.getPath() != null) {
-                try {
-                    Files.delete(getOutputDirPath().resolve(block.getPath()));
-                } catch (IOException e) {
-                    LOG.error("Can't delete file", e);
-                }
-            }
+            deleteGeneratedFile(block);
         }
         newsBlockRepository.save(block);
         return getBlock(date, name);
+    }
+
+    private void deleteGeneratedFile(NewsBlock block) {
+        if (block.getPath() != null) {
+            try {
+                Files.delete(getOutputDirPath().resolve(block.getPath()));
+            } catch (IOException e) {
+                LOG.error("Can't delete file", e);
+            }
+        }
     }
 
     public NewsBlock getBlock(LocalDate date, String name) {
@@ -214,6 +222,19 @@ public class NewsBlockService {
         return getBlock(localDate, name);
     }
 
+    public NewsBlock update(String id, NewsBlockToSave newsBlockToSave) {
+        NewsBlock block = newsBlockRepository.findOne(id);
+        deleteGeneratedFile(block);
+        block.getFiles().clear();
+        for (NewsFileReference file : newsBlockToSave.getFiles()) {
+            block.getFiles().add(newsFileService.get(file.getId()));
+        }
+        block.setPath("");
+        newsBlockRepository.save(block);
+
+        return newsBlockRepository.findOne(id);
+    }
+
     public void generate(NewsBlock block) {
         if (block.getFiles().isEmpty()) {
             drawFiles(block);
@@ -229,17 +250,21 @@ public class NewsBlockService {
         for (int i = 0; i < 10; i++) {
             for (NewsBlock block : getBlocks(date)) {
                 if (block.getLiveAt() == null || block.getLiveAt().size() == 0) {
-                    if (block.getPath() != null) {
-                        try {
-                            Files.delete(getOutputDirPath().resolve(block.getPath()));
-                        } catch (IOException e) {
-                            LOG.error("Can't detele file: " + block.getPath(), e);
-                        }
-                    }
+                    deleteGeneratedFile(block, getOutputDirPath().resolve(block.getPath()), "Can't detele file: " + block.getPath());
                     newsBlockRepository.delete(block);
                 }
             }
             d = d.plusDays(1);
+        }
+    }
+
+    private void deleteGeneratedFile(NewsBlock block, Path resolve, String s) {
+        if (block.getPath() != null) {
+            try {
+                Files.delete(resolve);
+            } catch (IOException e) {
+                LOG.error(s, e);
+            }
         }
     }
 

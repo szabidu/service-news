@@ -1,8 +1,7 @@
-package hu.tilos.radio.backend;
+package hu.tilos.radio.backend.file;
 
+import hu.tilos.radio.backend.file.NewsFile;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
-import java.time.LocalDate;
 
 
 public interface NewsFileRepository extends MongoRepository<NewsFile, String> {

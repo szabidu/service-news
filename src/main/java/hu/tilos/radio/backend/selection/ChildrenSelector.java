@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend.selection;
 
-import hu.tilos.radio.backend.NewsFile;
+import hu.tilos.radio.backend.file.NewsFile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

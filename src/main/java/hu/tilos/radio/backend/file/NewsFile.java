@@ -1,7 +1,9 @@
-package hu.tilos.radio.backend;
+package hu.tilos.radio.backend.file;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import hu.tilos.radio.backend.json.LocalDateTimeJsonDeserializer;
+import hu.tilos.radio.backend.json.LocalDateTimeJsonSerializer;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,7 +43,7 @@ public class NewsFile {
 
     public NewsFile(String path, String category, int duration) {
         this.path = path;
-        this.duration= duration;
+        this.duration = duration;
         this.category = category;
         created = LocalDateTime.now();
         validFrom = LocalDateTime.now().minusDays(1);

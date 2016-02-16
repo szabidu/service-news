@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.block.NewsBlock;
 import hu.tilos.radio.backend.scheduling.*;
 import org.springframework.stereotype.Service;
 

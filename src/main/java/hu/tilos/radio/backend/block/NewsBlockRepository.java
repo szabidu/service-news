@@ -1,8 +1,8 @@
-package hu.tilos.radio.backend;
+package hu.tilos.radio.backend.block;
 
+import hu.tilos.radio.backend.block.NewsBlock;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

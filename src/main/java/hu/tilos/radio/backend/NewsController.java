@@ -1,11 +1,15 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.block.NewsBlock;
+import hu.tilos.radio.backend.block.NewsBlockService;
+import hu.tilos.radio.backend.block.NewsBlockToSave;
+import hu.tilos.radio.backend.file.NewsFile;
+import hu.tilos.radio.backend.file.NewsFileService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -73,6 +77,11 @@ public class NewsController {
     @RequestMapping(value = "/api/v1/news/block/{date}", method = RequestMethod.GET)
     public List<NewsBlock> blockList(@PathVariable String date) {
         return blockService.getBlocks(LocalDate.parse(date));
+    }
+
+    @RequestMapping(value = "/api/v1/news/block/{id}", method = RequestMethod.PUT)
+    public NewsBlock update(@PathVariable String id, @RequestBody NewsBlockToSave save) {
+        return blockService.update(id, save);
     }
 
     @RequestMapping(value = "/api/v1/news/block/{date}/{name}", method = RequestMethod.GET, produces = "application/json")

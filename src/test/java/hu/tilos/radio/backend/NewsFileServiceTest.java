@@ -1,9 +1,8 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.file.NewsFileService;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class NewsFileServiceTest {
 

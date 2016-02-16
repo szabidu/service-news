@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend.scheduling;
 
-import hu.tilos.radio.backend.NewsBlock;
+import hu.tilos.radio.backend.block.NewsBlock;
 
 import java.time.LocalDate;
 import java.util.List;

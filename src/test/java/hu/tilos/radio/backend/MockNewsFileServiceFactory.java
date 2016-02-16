@@ -1,6 +1,6 @@
 package hu.tilos.radio.backend;
 
-import org.mockito.Mockito;
+import hu.tilos.radio.backend.file.NewsFileService;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

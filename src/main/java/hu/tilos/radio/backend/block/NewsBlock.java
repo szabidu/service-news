@@ -1,6 +1,9 @@
-package hu.tilos.radio.backend;
+package hu.tilos.radio.backend.block;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import hu.tilos.radio.backend.json.LocalDateTimeJsonSerializer;
+import hu.tilos.radio.backend.json.LocalDateTimeListJsonSerializer;
+import hu.tilos.radio.backend.file.NewsFile;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;

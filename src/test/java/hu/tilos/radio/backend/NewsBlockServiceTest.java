@@ -1,5 +1,9 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.block.NewsBlock;
+import hu.tilos.radio.backend.block.NewsBlockService;
+import hu.tilos.radio.backend.file.NewsFile;
+import hu.tilos.radio.backend.file.NewsFileService;
 import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
 import hu.tilos.radio.backend.selection.ChildrenSelector;
 import hu.tilos.radio.backend.selection.DefaultSelector;
