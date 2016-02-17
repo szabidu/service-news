@@ -1,9 +1,9 @@
 package hu.tilos.radio.backend.block;
 
-import hu.tilos.radio.backend.file.NewsFileService;
 import hu.tilos.radio.backend.NewsSignalService;
 import hu.tilos.radio.backend.Scheduler;
 import hu.tilos.radio.backend.file.NewsFile;
+import hu.tilos.radio.backend.file.NewsFileService;
 import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
 import hu.tilos.radio.backend.selection.Selector;
 import org.slf4j.Logger;
@@ -223,15 +223,19 @@ public class NewsBlockService {
     }
 
     public NewsBlock update(String id, NewsBlockToSave newsBlockToSave) {
-        NewsBlock block = newsBlockRepository.findOne(id);
-        deleteGeneratedFile(block);
-        block.getFiles().clear();
-        for (NewsFileReference file : newsBlockToSave.getFiles()) {
-            block.getFiles().add(newsFileService.get(file.getId()));
-        }
-        block.setPath("");
-        newsBlockRepository.save(block);
 
+        NewsBlock block = newsBlockRepository.findOne(id);
+        if (!block.wasLive()) {
+            deleteGeneratedFile(block);
+            block.getFiles().clear();
+            for (NewsFileReference file : newsBlockToSave.getFiles()) {
+                block.getFiles().add(newsFileService.get(file.getId()));
+            }
+            block.setPath("");
+            newsBlockRepository.save(block);
+        } else {
+            throw new IllegalArgumentException("Nem lehet módosítani olyan blokkot, ami már lement");
+        }
         return newsBlockRepository.findOne(id);
     }
 
@@ -249,7 +253,7 @@ public class NewsBlockService {
         LocalDate d = date;
         for (int i = 0; i < 10; i++) {
             for (NewsBlock block : getBlocks(date)) {
-                if (block.getLiveAt() == null || block.getLiveAt().size() == 0) {
+                if (!block.wasLive()) {
                     deleteGeneratedFile(block, getOutputDirPath().resolve(block.getPath()), "Can't detele file: " + block.getPath());
                     newsBlockRepository.delete(block);
                 }
