@@ -31,11 +31,15 @@ public class BlockBuilder {
     }
 
     public BlockBuilder addShort(String name, int hour, int minute, int second, int duration) {
-        result.add(new NewsBlock(name, date.atTime(hour, minute, second), duration * 60)
+        NewsBlock newsBlock = new NewsBlock(name, date.atTime(hour, minute, second), duration * 60)
                 .setWithSeparatorSignal(false)
                 .setBackgroundPath("bangkok.wav")
                 .setSelection("short")
-                .setSignalType("short"));
+                .setSignalType("short");
+        if (Math.random() < 0.5) {
+            newsBlock.setSignalType("czaban").setBackgroundPath("Czaban-loop.mp3");
+        }
+        result.add();
         return this;
     }
 
