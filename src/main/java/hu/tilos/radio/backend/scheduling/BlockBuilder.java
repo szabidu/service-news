@@ -39,7 +39,7 @@ public class BlockBuilder {
         if (Math.random() < 0.5) {
             newsBlock.setSignalType("czaban").setBackgroundPath("Czaban-loop.mp3");
         }
-        result.add();
+        result.add(newsBlock);
         return this;
     }
 
