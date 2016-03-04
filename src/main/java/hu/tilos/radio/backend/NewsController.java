@@ -74,6 +74,12 @@ public class NewsController {
         return blockService.getTodo();
     }
 
+    @RequestMapping(value = "/api/v1/news/block/report", method = RequestMethod.GET)
+    @ResponseBody
+    public String weeklyReport() {
+        return blockService.getWeeklyReport();
+    }
+
     @RequestMapping(value = "/api/v1/news/block/{date}", method = RequestMethod.GET)
     public List<NewsBlock> blockList(@PathVariable String date) {
         return blockService.getBlocks(LocalDate.parse(date));

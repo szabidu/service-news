@@ -17,9 +17,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -248,6 +251,32 @@ public class NewsBlockService {
         scriptExecutor.executeScript(generateScript, workDir, "combine");
     }
 
+
+    public String getWeeklyReport() {
+
+        LocalDateTime start = LocalDateTime.now().with(TemporalAdjusters.previous(DayOfWeek.FRIDAY.MONDAY)).minusDays(7);
+        LocalDateTime end = start.plusDays(7);
+
+        List<NewsBlock> byDateBetween = newsBlockRepository.findByDateBetween(start, end);
+        StringBuilder b = new StringBuilder();
+        for (NewsBlock block : byDateBetween) {
+            if (block.wasLive()) {
+                for (LocalDateTime time : block.getLiveAt()) {
+                    b.append(block.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                    b.append(";");
+                    b.append(time.format(DateTimeFormatter.ISO_TIME));
+                    b.append(";");
+                    b.append(time.plusSeconds(block.getExpectedDuration()).format(DateTimeFormatter.ISO_TIME));
+                    b.append(";");
+                    b.append(block.getName());
+                    b.append(";");
+                    b.append("\n");
+                }
+            }
+        }
+
+        return b.toString();
+    }
 
     public void deleteDay(LocalDate date) {
         LocalDate d = date;
