@@ -36,7 +36,7 @@ public class BlockBuilder {
                 .setBackgroundPath("bangkok.wav")
                 .setSelection("short")
                 .setSignalType("short");
-        if (Math.random() < 0.5) {
+        if (Math.random() < 0.3) {
             newsBlock.setSignalType("czaban").setBackgroundPath("Czaban-loop.mp3");
         }
         result.add(newsBlock);

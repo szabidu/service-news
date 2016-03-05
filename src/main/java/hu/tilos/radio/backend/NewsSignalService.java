@@ -34,9 +34,9 @@ public class NewsSignalService {
         signals.put("short", shortSignal);
 
         NewsSignal czaban = new NewsSignal();
-        shortSignal.setIntroPath("Czaban-signal-1.mp3");
-        shortSignal.setOutroPath("Czaban-signal-2.mp3");
-        shortSignal.setSumLength(34);
+        czaban.setIntroPath("Czaban-signal-1.mp3");
+        czaban.setOutroPath("Czaban-signal-2.mp3");
+        czaban.setSumLength(34);
         signals.put("czaban", czaban);
     }
 }
