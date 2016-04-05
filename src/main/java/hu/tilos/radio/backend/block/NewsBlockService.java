@@ -284,13 +284,13 @@ public class NewsBlockService {
 
     public void deleteDay(LocalDate date) {
         LocalDate d = date;
-        for (int i = 0; i < 10; i++) {
-            for (NewsBlock block : getBlocks(date)) {
-                if (!block.wasLive() && block.getPath() != null) {
+        for (int i = 0; i < 30; i++) {
+            getBlocks(date).stream().filter(block -> !block.wasLive()).forEach(block -> {
+                if (block.getPath() != null) {
                     deleteGeneratedFile(block, getOutputDirPath().resolve(block.getPath()), "Can't detele file: " + block.getPath());
-                    newsBlockRepository.delete(block);
                 }
-            }
+                newsBlockRepository.delete(block);
+            });
             d = d.plusDays(1);
         }
     }
