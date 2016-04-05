@@ -59,7 +59,7 @@ public class BlockBuilder {
     }
 
     protected BlockBuilder singleBlockSymmetric(int hour, int min) {
-        LocalTime time = LocalTime.of(hour, min).minusMinutes(min);
+        LocalTime time = LocalTime.of(hour, min).minusSeconds(3 * 60 / 2);
         addShort("3perces-" + hour, time.getHour(), time.getMinute(), time.getSecond(), 3);
         return this;
     }
