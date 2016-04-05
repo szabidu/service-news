@@ -287,7 +287,7 @@ public class NewsBlockService {
         for (int i = 0; i < 30; i++) {
             getBlocks(date).stream().filter(block -> !block.wasLive()).forEach(block -> {
                 if (block.getPath() != null) {
-                    deleteGeneratedFile(block, getOutputDirPath().resolve(block.getPath()), "Can't detele file: " + block.getPath());
+                    deleteGeneratedFile(block, getOutputDirPath().resolve(block.getPath()), "Can't delete file: " + block.getPath());
                 }
                 newsBlockRepository.delete(block);
             });
