@@ -12,9 +12,8 @@ public class Friday implements BaseScheduling {
         return new BlockBuilder(date)
                 .addBlock("reggel", LocalTime.of(5, 0), 12)
                 .addBlock("este", LocalTime.of(19, 48), 12)
-
-                .singleBlockPre(7)
                 .doubleBlock(8)
+                .singleBlockAt(8)
                 .doubleBlock(10)
                 .singleBlockSymmetric(11, 30)
                 .singleBlockSymmetric(12, 30)
