@@ -1,15 +1,28 @@
 package hu.tilos.radio.backend.scheduling;
 
+import hu.tilos.radio.backend.NewsSignal;
+import hu.tilos.radio.backend.NewsSignalService;
 import hu.tilos.radio.backend.block.NewsBlock;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BlockBuilder {
-    LocalDate date;
-    List<NewsBlock> result;
+
+    @Autowired
+    NewsSignalService signalService;
+
+    private LocalDate date;
+
+    private List<NewsBlock> result;
+
+    private String[] shortSignals = new String[]{"short", "czaban", "zep", "rooster"};
+
+    private Random random = new Random();
 
     public BlockBuilder(LocalDate date) {
         this.date = date;
@@ -33,12 +46,9 @@ public class BlockBuilder {
     public BlockBuilder addShort(String name, int hour, int minute, int second, int duration) {
         NewsBlock newsBlock = new NewsBlock(name, date.atTime(hour, minute, second), duration * 60)
                 .setWithSeparatorSignal(false)
-                .setBackgroundPath("bangkok.wav")
-                .setSelection("short")
-                .setSignalType("short");
-        if (Math.random() < 0.3) {
-            newsBlock.setSignalType("czaban").setBackgroundPath("Czaban-loop.mp3");
-        }
+                .setSelection("short");
+
+        newsBlock.setSignalType(shortSignals[random.nextInt(shortSignals.length)]);
         result.add(newsBlock);
         return this;
     }

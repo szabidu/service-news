@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend.block;
 
+import hu.tilos.radio.backend.NewsSignal;
 import hu.tilos.radio.backend.NewsSignalService;
 import hu.tilos.radio.backend.Scheduler;
 import hu.tilos.radio.backend.file.NewsFile;
@@ -206,11 +207,14 @@ public class NewsBlockService {
             lastCategory = file.getCategory();
         }
 
-        Path introPath = getSignalPath().resolve(signalService.getSignal(block.getSignalType()).getIntroPath());
-        Path outroPath = getSignalPath().resolve(signalService.getSignal(block.getSignalType()).getOutroPath());
+        NewsSignal signal = signalService.getSignal(block.getSignalType());
+        Path introPath = getSignalPath().resolve(signal.getIntroPath());
+        Path outroPath = getSignalPath().resolve(signal.getOutroPath());
+
+        String loopFile = block.getBackgroundPath() != null ? block.getBackgroundPath() : signal.getDefaultLoop();
 
         b.append("sox $TMPDIR/hirekeddig.wav $SIGNALDIR/silence3.wav $TMPDIR/hireketmondunk.wav\n" +
-                "sox " + getSignalPath().resolve(block.getBackgroundPath()) + " $TMPDIR/zenemost.wav trim 0 $(soxi -s $TMPDIR/hireketmondunk.wav)s \n" +
+                "sox " + getSignalPath().resolve(loopFile) + " $TMPDIR/zenemost.wav trim 0 $(soxi -s $TMPDIR/hireketmondunk.wav)s \n" +
                 "sox -m $TMPDIR/zenemost.wav $TMPDIR/hireketmondunk.wav $TMPDIR/zeneshirek.wav\n" +
                 "sox " + introPath + " $TMPDIR/zeneshirek.wav $TMPDIR/hirek_eleje.wav splice -q $(soxi -D " + introPath + "),2\n" +
                 "mkdir -p " + destinationFilePath.getParent() + "\n" +
@@ -282,7 +286,7 @@ public class NewsBlockService {
         LocalDate d = date;
         for (int i = 0; i < 10; i++) {
             for (NewsBlock block : getBlocks(date)) {
-                if (!block.wasLive()) {
+                if (!block.wasLive() && block.getPath() != null) {
                     deleteGeneratedFile(block, getOutputDirPath().resolve(block.getPath()), "Can't detele file: " + block.getPath());
                     newsBlockRepository.delete(block);
                 }

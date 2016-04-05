@@ -41,7 +41,7 @@ public class NewsBlock {
 
     private String path;
 
-    private String backgroundPath = "hirekzene.wav";
+    private String backgroundPath;
 
     private boolean withSeparatorSignal = true;
 

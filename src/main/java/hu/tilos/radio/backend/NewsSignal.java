@@ -8,6 +8,8 @@ public class NewsSignal {
 
     private int sumLength;
 
+    private String defaultLoop;
+
     public String getIntroPath() {
         return introPath;
     }
@@ -30,5 +32,13 @@ public class NewsSignal {
 
     public void setSumLength(int sumLength) {
         this.sumLength = sumLength;
+    }
+
+    public void setDefaultLoop(String defaultLoop) {
+        this.defaultLoop = defaultLoop;
+    }
+
+    public String getDefaultLoop() {
+        return defaultLoop;
     }
 }

@@ -21,22 +21,21 @@ public class NewsSignalService {
 
     @PostConstruct
     public void init() {
-        NewsSignal newsSignal = new NewsSignal();
-        newsSignal.setIntroPath("Hirek_intro.wav");
-        newsSignal.setOutroPath("Hirek_outro.wav");
-        newsSignal.setSumLength(20);
-        signals.put("classic", newsSignal);
+        addSignal("short", "short_intro.wav", "short_outro.wav", 21, "bangkok.wav");
+        addSignal("classic", "Hirek_intro.wav", "Hirek_outro.wav", 20, "hirekzene.wav");
+        addSignal("czaban", "Czaban-signal-1.mp3", "Czaban-signal-2.mp3", 34, "Czaban-loop.mp3");
+        addSignal("zep", "zen-eleje.mp3", "zen-vege.mp3", 22, "zen-gumi.mp3");
+        addSignal("rooster", "rooster-eleje.mp3", "rooster-vege.mp3", 17, "rooster-gumi.mp3");
 
-        NewsSignal shortSignal = new NewsSignal();
-        shortSignal.setIntroPath("short_intro.wav");
-        shortSignal.setOutroPath("short_outro.wav");
-        shortSignal.setSumLength(21);
-        signals.put("short", shortSignal);
-
-        NewsSignal czaban = new NewsSignal();
-        czaban.setIntroPath("Czaban-signal-1.mp3");
-        czaban.setOutroPath("Czaban-signal-2.mp3");
-        czaban.setSumLength(34);
-        signals.put("czaban", czaban);
     }
+
+    private void addSignal(String name, String intro, String outro, int length, String defaultLoop) {
+        NewsSignal newsSignal = new NewsSignal();
+        newsSignal.setIntroPath(intro);
+        newsSignal.setOutroPath(outro);
+        newsSignal.setSumLength(length);
+        newsSignal.setDefaultLoop(defaultLoop);
+        signals.put(name, newsSignal);
+    }
+
 }
