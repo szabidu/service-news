@@ -27,6 +27,12 @@ public class NewsSignalService {
         addSignal("zep", "zen-eleje.mp3", "zen-vege.mp3", 22, "zen-gumi.mp3");
         addSignal("rooster", "rooster-eleje.mp3", "rooster-vege.mp3", 17, "rooster-gumi.mp3");
 
+        addSignal("busa", "busa-intro.wav", "busa-outro.wav", 16, "tf1128.wav");
+        addSignal("vektor", "vektor-intro.wav ", "vektor-outro.wav", 22, "tf1128.wav");
+        addSignal("csillla", "csilla-intro.wav", "csilla-outro.wav", 22, "vgyl-1113.wav");
+        addSignal("zsu", "zsu-intro.wav", "zsu-outro.wav", 27, "s4-s.wav");
+
+
     }
 
     private void addSignal(String name, String intro, String outro, int length, String defaultLoop) {
