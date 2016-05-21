@@ -25,8 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,9 +41,6 @@ public class NewsBlockService {
 
     @Value("${news.outputDir}")
     private String outputDir;
-
-    @Value("${spot.dir}")
-    private String spotDir;
 
     @Inject
     NewsFileService newsFileService;
@@ -64,7 +59,6 @@ public class NewsBlockService {
 
     @Inject
     private NewsSignalService signalService;
-    private Random random = new Random();
 
 
     public Path getInputDirPath() {
@@ -219,30 +213,13 @@ public class NewsBlockService {
 
         String loopFile = block.getBackgroundPath() != null ? block.getBackgroundPath() : signal.getDefaultLoop();
 
-
         b.append("sox $TMPDIR/hirekeddig.wav $SIGNALDIR/silence3.wav $TMPDIR/hireketmondunk.wav\n" +
                 "sox " + getSignalPath().resolve(loopFile) + " $TMPDIR/zenemost.wav trim 0 $(soxi -s $TMPDIR/hireketmondunk.wav)s \n" +
                 "sox -m $TMPDIR/zenemost.wav $TMPDIR/hireketmondunk.wav $TMPDIR/zeneshirek.wav\n" +
                 "sox " + introPath + " $TMPDIR/zeneshirek.wav $TMPDIR/hirek_eleje.wav splice -q $(soxi -D " + introPath + "),2\n" +
                 "mkdir -p " + destinationFilePath.getParent() + "\n" +
-                "sox $TMPDIR/hirek_eleje.wav " + outroPath + " " + "$TMPDIR/hirekkesz.mp3 splice -q $(soxi -D $TMPDIR/hirek_eleje.wav),2\n");
-        Optional<String> spot = chooseRandomSpot();
-        if (spot.isPresent()) {
-            b.append("sox " + spot.get() + " $TMPDIR/hirekkesz.mp3 " + destinationFilePath + "\n");
-        } else {
-            b.append("mv $TMPDIR/hirekesz.wav $SIGNALDIR/silence3.wav " + destinationFilePath + "\n");
-        }
+                "sox $TMPDIR/hirek_eleje.wav " + outroPath + " " + destinationFilePath + " splice -q $(soxi -D $TMPDIR/hirek_eleje.wav),2\n");
         return b.toString();
-    }
-
-    private Optional<String> chooseRandomSpot() {
-        try {
-            List<String> files = Files.list(Paths.get(spotDir)).map(a -> a.toString()).collect(Collectors.toList());
-            return Optional.of(files.get(random.nextInt(files.size())));
-        } catch (Exception ex) {
-            LOG.error("Can't get news file", ex);
-            return Optional.empty();
-        }
     }
 
 
