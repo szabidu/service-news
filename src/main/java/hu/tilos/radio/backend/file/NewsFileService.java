@@ -35,9 +35,6 @@ public class NewsFileService {
     private NewsFileRepository newsFileRepository;
 
     @Inject
-    private NewsBlockRepository newsBlockRepository;
-
-    @Inject
     private ScriptExecutor scriptExecutor;
 
     @Scheduled(fixedRate = 1 * 60 * 1000)

@@ -64,6 +64,15 @@ public class NewsController {
     }
 
     @PreAuthorize("hasRole('ROLE_AUTHOR')")
+    @RequestMapping(value = "/api/v1/news/block/{id}/upload", method = RequestMethod.POST)
+    @ResponseBody
+    public void handleBlockFileUpload(
+            @RequestParam(value = "newsfile", required = true) MultipartFile file,
+            @PathVariable String id) {
+        blockService.upload(id, file);
+    }
+
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
     @RequestMapping(value = "/api/v1/news/import", method = RequestMethod.POST)
     public void importFiles() {
         fileService.importNewFiles();
@@ -103,15 +112,18 @@ public class NewsController {
     }
 
     @PreAuthorize("hasRole('ROLE_AUTHOR')")
-    @RequestMapping(value = "/api/v1/news/block/{date}/{name}", method = RequestMethod.POST)
-    public NewsBlock save(@PathVariable String date, @PathVariable String name, @RequestParam(defaultValue = "false") boolean generate) {
+    @RequestMapping(value = "/api/v1/news/block/{date}/{name}/generate", method = RequestMethod.POST)
+    public NewsBlock generate(@PathVariable String date, @PathVariable String name) {
         LocalDate localDate = LocalDate.parse(date);
-        if (generate) {
-            return blockService.generate(localDate, name);
-        } else {
+        return blockService.generate(localDate, name);
+    }
 
-            return blockService.draw(localDate, name);
-        }
+    @PreAuthorize("hasRole('ROLE_AUTHOR')")
+    @RequestMapping(value = "/api/v1/news/block/{date}/{name}/draw", method = RequestMethod.POST)
+    public NewsBlock draw(@PathVariable String date, @PathVariable String name) {
+        LocalDate localDate = LocalDate.parse(date);
+        return blockService.draw(localDate, name);
+
     }
 
     @PreAuthorize("hasRole('ROLE_AUTHOR')")

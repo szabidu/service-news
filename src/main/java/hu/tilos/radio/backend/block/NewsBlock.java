@@ -51,6 +51,8 @@ public class NewsBlock {
 
     private String selection = "default";
 
+    private boolean handmade;
+
     public NewsBlock() {
     }
 
@@ -189,7 +191,7 @@ public class NewsBlock {
         files.add(one);
     }
 
-    public NewsBlock findGeneratedFiled(Path root) {
+    public NewsBlock findGeneratedFile(Path root) {
         Path destinationPath = createDestinationPath();
         if (Files.exists(root.resolve(destinationPath))) {
             setPath(destinationPath.toString());
@@ -201,5 +203,13 @@ public class NewsBlock {
 
     public Path createDestinationPath() {
         return Paths.get(getDate().format(dataBasedPath), getName() + ".mp3");
+    }
+
+    public boolean isHandmade() {
+        return handmade;
+    }
+
+    public void setHandmade(boolean handmade) {
+        this.handmade = handmade;
     }
 }

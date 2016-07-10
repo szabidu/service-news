@@ -1,7 +1,10 @@
-package hu.tilos.radio.backend;
+package hu.tilos.radio.backend.block.transition;
 
+import hu.tilos.radio.backend.MockNewsBlockRepositoryFactory;
+import hu.tilos.radio.backend.MockNewsFileRepositoryFactory;
+import hu.tilos.radio.backend.MockNewsFileServiceFactory;
+import hu.tilos.radio.backend.NewsSignalService;
 import hu.tilos.radio.backend.block.NewsBlock;
-import hu.tilos.radio.backend.block.NewsBlockService;
 import hu.tilos.radio.backend.file.NewsFile;
 import hu.tilos.radio.backend.file.NewsFileService;
 import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
@@ -23,34 +26,32 @@ import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {
-        DefaultSelector.class, ChildrenSelector.class,
-        NewsSignalService.class,
-        NewsBlockService.class,
-        MockNewsBlockRepositoryFactory.class,
+        DefaultSelector.class,
+        DrawFiles.class,
         MockNewsFileRepositoryFactory.class,
-        NewsBlockServiceTest.class,
-        Scheduler.class})
+        MockNewsBlockRepositoryFactory.class,
+        MockNewsFileServiceFactory.class,
+        NewsSignalService.class,
+        ChildrenSelector.class,
+        DrawFilesTest.class})
 @Component
-public class NewsBlockServiceTest {
+public class DrawFilesTest {
+
 
     @Autowired
-    NewsBlockService newsBlockService;
+    private NewsFileService newsFileService;
 
+    @Autowired
+    DrawFiles drawFiles;
 
     @Bean
     public ScriptExecutor createScriptExecutor() {
         return null;
     }
 
-    @Bean
-    public NewsFileService createNewsFileService() {
-        return Mockito.mock(NewsFileService.class);
-    }
-
 
     @Test
     public void testSelectFiles() {
-        NewsFileService newsFileService = newsBlockService.getNewsFileService();
         Mockito.reset(newsFileService);
         //given
         List<NewsFile> files = new ArrayList<>();
@@ -65,7 +66,7 @@ public class NewsBlockServiceTest {
         valami.setSelection("default");
 
         //when
-        newsBlockService.drawFiles(valami);
+        valami = drawFiles.process(valami);
 
         //then
         Assert.assertEquals(3, valami.getFiles().size());
@@ -74,7 +75,6 @@ public class NewsBlockServiceTest {
 
     @Test
     public void testChildren() {
-        NewsFileService newsFileService = newsBlockService.getNewsFileService();
         Mockito.reset(newsFileService);
         //given
         List<NewsFile> files = new ArrayList<>();
@@ -90,7 +90,7 @@ public class NewsBlockServiceTest {
             valami.setSelection("children");
 
             //when
-            newsBlockService.drawFiles(valami);
+            valami = drawFiles.process(valami);
 
             //then
             Assert.assertEquals(2, valami.getFiles().size());
@@ -99,6 +99,5 @@ public class NewsBlockServiceTest {
             Assert.assertNotEquals(valami.getFiles().get(0), valami.getFiles().get(1));
         }
     }
-
 
 }
