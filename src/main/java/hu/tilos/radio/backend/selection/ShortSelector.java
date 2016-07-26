@@ -1,5 +1,6 @@
 package hu.tilos.radio.backend.selection;
 
+import hu.tilos.radio.backend.file.NewsElement;
 import hu.tilos.radio.backend.file.NewsFile;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,10 @@ public class ShortSelector extends DefaultSelector {
         return !file.getCategory().equals("idojaras") && !file.getCategory().equals("sport");
     }
 
+    @Override
+    protected void addCategoryTitle(NewsFile one, List<NewsElement> selectedFiles) {
+        //noop
+    }
 
     public NewsFile pickOne(List<NewsFile> files) {
         if (files.size() < 1) {

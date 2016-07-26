@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ChildrenSelector extends ShortSelector {
+
     private Random random = new Random();
 
     @Override

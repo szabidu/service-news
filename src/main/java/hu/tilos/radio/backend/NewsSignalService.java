@@ -1,19 +1,37 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.file.FileDuration;
+import hu.tilos.radio.backend.file.NewsElement;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @Service
 public class NewsSignalService {
 
     private Map<String, NewsSignal> signals = new HashMap<>();
 
+    private Random random = new Random();
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(NewsSignalService.class);
+
+    @Inject
+    private FileDuration fileDuration;
+
+    @Value("${news.inputDir}")
+    private String inputDir;
+
     public NewsSignal getSignal(String id) {
         if (id == null) {
-            return signals.get("classic");
+            return signals.get("zen");
         } else {
             return signals.get(id);
         }
@@ -21,27 +39,39 @@ public class NewsSignalService {
 
     @PostConstruct
     public void init() {
-        addSignal("short", "short_intro.wav", "short_outro.wav", 21, "bangkok.wav");
-        addSignal("classic", "Hirek_intro.wav", "Hirek_outro.wav", 20, "hirekzene.wav");
-        addSignal("czaban", "Czaban-signal-1.mp3", "Czaban-signal-2.mp3", 34, "Czaban-loop.mp3");
-        addSignal("zep", "zen-eleje.mp3", "zen-vege.mp3", 22, "zen-gumi.mp3");
-        addSignal("rooster", "rooster-eleje.mp3", "rooster-vege.mp3", 17, "rooster-gumi.mp3");
+        try {
 
-        addSignal("busa", "busa-intro.wav", "busa-outro.wav", 16, "tf1128.wav");
-        addSignal("vektor", "vektor-intro.wav ", "vektor-outro.wav", 22, "tf1128.wav");
-        addSignal("csillla", "csilla-intro.wav", "csilla-outro.wav", 22, "vgyl-1113.wav");
-        addSignal("zsu", "zsu-intro.wav", "zsu-outro.wav", 27, "s4-s.wav");
-
-
+            Files.newDirectoryStream(getInputDir().resolve("signal"), Files::isDirectory).forEach(dir -> {
+                Path intro = dir.resolve("intro.mp3");
+                Path outro = dir.resolve("outro.mp3");
+                Path loop = dir.resolve("loop.mp3");
+                if (Files.exists(intro) && Files.exists(outro) && Files.exists(loop)) {
+                    addSignal(dir.getFileName().toString(), intro, outro, loop);
+                } else {
+                    LOGGER.warn("One of the news signal elements are missing: " + dir);
+                }
+            });
+        } catch (IOException e) {
+            LOGGER.error("Can't load signal", e);
+        }
+        LOGGER.info("Loaded {} signals: {}", signals.size(), signals.toString());
     }
 
-    private void addSignal(String name, String intro, String outro, int length, String defaultLoop) {
+    private void addSignal(String name, Path intro, Path outro, Path loop) {
         NewsSignal newsSignal = new NewsSignal();
-        newsSignal.setIntroPath(intro);
-        newsSignal.setOutroPath(outro);
-        newsSignal.setSumLength(length);
-        newsSignal.setDefaultLoop(defaultLoop);
+        newsSignal.setIntro(NewsElement.from(getInputDir().relativize(intro), "news_intro", fileDuration.calculate(intro)));
+        newsSignal.setOutro(NewsElement.from(getInputDir().relativize(outro), "news_outro", fileDuration.calculate(outro)));
+        newsSignal.setLoop(NewsElement.from(getInputDir().relativize(loop), "news_loop", fileDuration.calculate(loop)));
         signals.put(name, newsSignal);
     }
 
+
+    public NewsSignal getRandomSignal() {
+        List<NewsSignal> signalList = new ArrayList(signals.values());
+        return signalList.get(random.nextInt(signalList.size()));
+    }
+
+    public Path getInputDir() {
+        return Paths.get(inputDir);
+    }
 }

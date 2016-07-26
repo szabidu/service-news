@@ -1,6 +1,5 @@
 package hu.tilos.radio.backend.file;
 
-import hu.tilos.radio.backend.block.NewsBlockRepository;
 import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,13 +8,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.*;
-import java.nio.file.*;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,6 +36,9 @@ public class NewsFileService {
 
     @Inject
     private NewsFileRepository newsFileRepository;
+
+    @Inject
+    private FileDuration fileDuration;
 
     @Inject
     private ScriptExecutor scriptExecutor;
@@ -95,7 +101,7 @@ public class NewsFileService {
 
                 NewsFile newsFile = new NewsFile();
                 newsFile.setPath(file.toString());
-                newsFile.setDuration(calculateDuration(file));
+                newsFile.setDuration(fileDuration.calculate(getInputPath().resolve(file)));
                 newsFile.setCreated(getCreationDate(getInputPath().resolve(file)));
                 newsFile.setCategory(file.iterator().next().toString());
 
@@ -137,19 +143,6 @@ public class NewsFileService {
             return Integer.parseInt(matcher.group(1));
         } else {
             return 2;
-        }
-
-    }
-
-    private int calculateDuration(Path file) {
-        ProcessBuilder pb = new ProcessBuilder("soxi", "-D", getInputPath().resolve(file).toString());
-        try {
-            Process start = pb.start();
-            String result = new Scanner(start.getInputStream()).useDelimiter("//Z").next();
-            start.waitFor();
-            return Double.valueOf(result.trim()).intValue();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
     }

@@ -1,11 +1,21 @@
 package hu.tilos.radio.backend.selection;
 
+import hu.tilos.radio.backend.NewsSignal;
 import hu.tilos.radio.backend.NewsSignalService;
 import hu.tilos.radio.backend.block.NewsBlock;
+import hu.tilos.radio.backend.block.transition.GenerateFile;
+import hu.tilos.radio.backend.file.FileDuration;
+import hu.tilos.radio.backend.file.NewsElement;
 import hu.tilos.radio.backend.file.NewsFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,57 +27,63 @@ public class DefaultSelector implements Selector {
     @Inject
     private NewsSignalService signalService;
 
+    @Inject
+    FileDuration fileDuration;
+
+    @Value("${news.inputDir}")
+    private String inputDir;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSelector.class);
+
     public boolean filter(NewsFile file) {
         return true;
     }
 
     @Override
-    public List<NewsFile> selectFor(NewsBlock block, List<NewsFile> files) {
+    public List<NewsElement> selectFor(NewsBlock block, List<NewsFile> files) {
         files = files.stream().filter(file -> filter(file)).collect(Collectors.toList());
-        List<NewsFile> selectedFiles = new ArrayList<>();
+        List<NewsElement> selectedFiles = new ArrayList<>();
+
+        NewsSignal randomSignal = signalService.getRandomSignal();
+        selectedFiles.add(randomSignal.getIntro());
+        selectedFiles.add(randomSignal.getOutro());
+        selectedFiles.add(randomSignal.getLoop());
+
         List<NewsFile> availableFiles = files.stream().filter(file -> {
             return file.getExpiration().isAfter(block.getDate()) && (file.getValidFrom() == null || file.getValidFrom().isBefore(block.getDate()));
         }).collect(Collectors.toList());
-        while (NewsFile.durationOf(selectedFiles) + 2 * signalService.getSignal(block.getSignalType()).getSumLength() + (selectedFiles.size() * 3) < block.getExpectedDuration()) {
+
+        Set<String> categories = new HashSet<>();
+
+        while (GenerateFile.estimateDuration(selectedFiles) < block.getExpectedDuration()) {
             NewsFile one = pickOne(availableFiles);
             if (one != null) {
-                selectedFiles.add(one);
+                selectedFiles.add(NewsElement.from(one));
                 availableFiles.remove(one);
+                if (!categories.contains(one.getCategory())) {
+                    addCategoryTitle(one, selectedFiles);
+                }
+                categories.add(one.getCategory());
             } else {
                 break;
             }
 
         }
-        block.getFiles().clear();
-        return sort(selectedFiles);
+        block.clearFiles();
+        return selectedFiles;
     }
 
-
-    public List<NewsFile> sort(List<NewsFile> files) {
-        List<NewsFile> result = new ArrayList<>();
-        result.addAll(files);
-        Collections.sort(result, new Comparator<NewsFile>() {
-            @Override
-            public int compare(NewsFile o1, NewsFile o2) {
-                return getWeight(o1.getCategory()).compareTo(getWeight(o2.getCategory()));
-            }
-        });
-        return result;
-    }
-
-    public Integer getWeight(String category) {
-        if (category.equals("fontos")) {
-            return 0;
-        } else if (category.equals("kozerdeku")) {
-            return 1;
-        } else if (category.equals("szines")) {
-            return 300;
-        } else if (category.equals("idojaras")) {
-            return 301;
+    protected void addCategoryTitle(NewsFile one, List<NewsElement> selectedFiles) {
+        Path titleRelativePath = Paths.get("title").resolve(one.getCategory() + ".wav");
+        Path titlePath = Paths.get(inputDir).resolve(titleRelativePath);
+        if (Files.exists(titlePath)) {
+            selectedFiles.add(new NewsElement(null, titleRelativePath.toString(), "cim", fileDuration.calculate(titlePath)));
         } else {
-            return Integer.valueOf((int) category.charAt(0));
+            LOGGER.warn("Can't find the title file for category {} at {}", one.getCategory(), titlePath.toAbsolutePath().toString());
         }
+
     }
+
 
     public NewsFile pickOne(List<NewsFile> files) {
         if (files.size() < 1) {

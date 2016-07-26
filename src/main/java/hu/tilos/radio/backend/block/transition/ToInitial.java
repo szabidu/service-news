@@ -23,7 +23,7 @@ public class ToInitial implements StateTransition {
     public NewsBlock process(NewsBlock original) {
         deleteGeneratedFile(original);
         original.setHandmade(false);
-        original.getFiles().clear();
+        original.clearFiles();
         original.setPath("");
         return original;
     }

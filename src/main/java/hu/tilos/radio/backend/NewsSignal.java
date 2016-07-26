@@ -1,44 +1,37 @@
 package hu.tilos.radio.backend;
 
+import hu.tilos.radio.backend.file.NewsElement;
+
 public class NewsSignal {
 
-    private String introPath;
+    private NewsElement intro;
 
-    private String outroPath;
+    private NewsElement outro;
 
-    private int sumLength;
+    private NewsElement loop;
 
-    private String defaultLoop;
-
-    public String getIntroPath() {
-        return introPath;
+    public NewsElement getIntro() {
+        return intro;
     }
 
-    public void setIntroPath(String introPath) {
-        this.introPath = introPath;
+    public void setIntro(NewsElement intro) {
+        this.intro = intro;
     }
 
-    public String getOutroPath() {
-        return outroPath;
+    public NewsElement getOutro() {
+        return outro;
     }
 
-    public void setOutroPath(String outroPath) {
-        this.outroPath = outroPath;
+    public void setOutro(NewsElement outro) {
+        this.outro = outro;
     }
 
-    public int getSumLength() {
-        return sumLength;
+    public NewsElement getLoop() {
+        return loop;
     }
 
-    public void setSumLength(int sumLength) {
-        this.sumLength = sumLength;
+    public void setLoop(NewsElement loop) {
+        this.loop = loop;
     }
 
-    public void setDefaultLoop(String defaultLoop) {
-        this.defaultLoop = defaultLoop;
-    }
-
-    public String getDefaultLoop() {
-        return defaultLoop;
-    }
 }

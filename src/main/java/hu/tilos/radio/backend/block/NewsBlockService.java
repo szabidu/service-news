@@ -4,6 +4,7 @@ import hu.tilos.radio.backend.Scheduler;
 import hu.tilos.radio.backend.block.transition.DrawFiles;
 import hu.tilos.radio.backend.block.transition.GenerateFile;
 import hu.tilos.radio.backend.block.transition.ToInitial;
+import hu.tilos.radio.backend.file.NewsElement;
 import hu.tilos.radio.backend.file.NewsFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -158,8 +162,12 @@ public class NewsBlockService {
         NewsBlock block = newsBlockRepository.findOne(id);
         if (!block.wasLive()) {
             block = toInitial.process(block);
-            for (NewsFileReference file : newsBlockToSave.getFiles()) {
-                block.getFiles().add(newsFileService.get(file.getId()));
+            for (NewsElement file : newsBlockToSave.getFiles()) {
+                if (file.getId() != null) {
+                    block.addFile(NewsElement.from(newsFileService.get(file.getId())));
+                } else {
+                    block.addFile(file);
+                }
             }
             newsBlockRepository.save(block);
         } else {
@@ -235,5 +243,6 @@ public class NewsBlockService {
             throw new RuntimeException(ex);
         }
     }
+
 
 }

@@ -1,6 +1,5 @@
 package hu.tilos.radio.backend.scheduling;
 
-import hu.tilos.radio.backend.NewsSignal;
 import hu.tilos.radio.backend.NewsSignalService;
 import hu.tilos.radio.backend.block.NewsBlock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +44,7 @@ public class BlockBuilder {
 
     public BlockBuilder addShort(String name, int hour, int minute, int second, int duration) {
         NewsBlock newsBlock = new NewsBlock(name, date.atTime(hour, minute, second), duration * 60)
-                .setWithSeparatorSignal(false)
                 .setSelection("short");
-
-        newsBlock.setSignalType(shortSignals[random.nextInt(shortSignals.length)]);
         result.add(newsBlock);
         return this;
     }

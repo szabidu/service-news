@@ -69,7 +69,7 @@ public class DrawFilesTest {
         valami = drawFiles.process(valami);
 
         //then
-        Assert.assertEquals(3, valami.getFiles().size());
+        Assert.assertEquals(6, valami.getFiles().size());
     }
 
 
@@ -93,7 +93,7 @@ public class DrawFilesTest {
             valami = drawFiles.process(valami);
 
             //then
-            Assert.assertEquals(2, valami.getFiles().size());
+            Assert.assertEquals(5, valami.getFiles().size());
             Assert.assertEquals("gyerek", valami.getFiles().get(0).getCategory());
             Assert.assertEquals("gyerek", valami.getFiles().get(1).getCategory());
             Assert.assertNotEquals(valami.getFiles().get(0), valami.getFiles().get(1));

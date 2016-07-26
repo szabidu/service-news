@@ -1,6 +1,7 @@
 package hu.tilos.radio.backend.block.transition;
 
 import hu.tilos.radio.backend.block.NewsBlock;
+import hu.tilos.radio.backend.file.NewsElement;
 import hu.tilos.radio.backend.file.NewsFile;
 import hu.tilos.radio.backend.file.NewsFileService;
 import hu.tilos.radio.backend.selection.Selector;
@@ -36,25 +37,25 @@ public class DrawFiles implements StateTransition {
         final String selection = block.getSelection() == null ? "default" : block.getSelection();
         Selector selector1 = selectors.stream().filter(selector -> selector.getClass().getSimpleName().toLowerCase().replace("selector", "").equals(selection)).findFirst().get();
 
-        List<NewsFile> newsFiles = null;
+        List<NewsElement> newsFiles = null;
         int minDuration = Integer.MAX_VALUE;
         for (int i = 0; i < 3; i++) {
-            List<NewsFile> onePossibleSelection = selector1.selectFor(block, files);
-            int duration = NewsFile.durationOf(onePossibleSelection);
+            List<NewsElement> onePossibleSelection = selector1.selectFor(block, files);
+            int duration = GenerateFile.estimateDuration(onePossibleSelection);
             if (duration < minDuration) {
                 newsFiles = onePossibleSelection;
                 minDuration = duration;
             }
         }
 
-        block.setFiles(newsFiles);
+        block.addFiles(newsFiles);
         block.setHandmade(false);
         deleteGeneratedFile(block);
         return block;
     }
 
     private void deleteGeneratedFile(NewsBlock block) {
-        if (block.getPath() != null) {
+        if (block.getPath() != null && block.getPath().toString().length() > 0) {
             try {
                 Files.delete(getOutputDirPath().resolve(block.getPath()));
             } catch (IOException e) {
