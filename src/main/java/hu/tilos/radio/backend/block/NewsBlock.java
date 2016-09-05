@@ -208,7 +208,7 @@ public class NewsBlock {
 
     }
 
-    private Integer categoryOrder(String category) {
+    protected Integer categoryOrder(String category) {
         if (category.equals("news_intro")) {
             return 0;
         } else if (category.equals("news_outro")) {
@@ -222,14 +222,13 @@ public class NewsBlock {
         } else if (category.equals("szines")) {
             return 300;
         } else if (category.equals("idojaras")) {
-            return 301;
+            return 305;
         } else {
             return Integer.valueOf((int) category.charAt(0));
         }
     }
 
     public void addFiles(List<NewsElement> newsFiles) {
-
         files.addAll(newsFiles);
         files = sort(files);
     }
