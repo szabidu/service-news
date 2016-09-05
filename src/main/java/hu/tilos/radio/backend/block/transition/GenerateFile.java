@@ -40,16 +40,17 @@ public class GenerateFile implements StateTransition {
 
 
     public String getGenerateScript(NewsBlock block) {
-        Path destinationFilePath = getOutputDirPath().resolve(block.createDestinationPath());
+        Path destinationPath = getOutputDirPath().resolve(block.createDestinationPath());
+
 
         StringBuilder b = new StringBuilder();
         b.append("#!/bin/bash\n" +
                 "set -e\n" +
-                "export TMPDIR=./tmp\n" +
+                "export TMPDIR=/tmp/newscut\n" +
                 "rm -rf $TMPDIR\n" +
                 "mkdir -p $TMPDIR\n" +
                 "export SIGNALDIR=./signal\n");
-        b.append("sox $SIGNALDIR/silence6.wav $TMPDIR/eddig.wav\n");
+        b.append("sox " + getInputDirPath().resolve("silence").resolve("silence6.wav") + " $TMPDIR/eddig.wav\n");
         ;
 
         String joining = block.getFiles().stream().filter(ne -> !ne.getCategory().startsWith("news_")).map(ne -> {
@@ -60,18 +61,9 @@ public class GenerateFile implements StateTransition {
 
         b.append(addSignal(block.getFiles()));
 
-//        NewsSignal signal = signalService.getSignal(block.getSignalType());
-//        Path introPath = getSignalPath().resolve(signal.getIntroPath());
-//        Path outroPath = getSignalPath().resolve(signal.getOutroPath());
-//
-//        String loopFile = block.getBackgroundPath() != null ? block.getBackgroundPath() : signal.getDefaultLoop();
-//
-//        b.append("sox $TMPDIR/hirekeddig.wav $SIGNALDIR/silence3.wav $TMPDIR/hireketmondunk.wav\n" +
-//                "sox " + getSignalPath().resolve(loopFile) + " $TMPDIR/zenemost.wav trim 0 $(soxi -s $TMPDIR/hireketmondunk.wav)s \n" +
-//                "sox -m $TMPDIR/zenemost.wav $TMPDIR/hireketmondunk.wav $TMPDIR/zeneshirek.wav\n" +
-//                "sox " + introPath + " $TMPDIR/zeneshirek.wav $TMPDIR/hirek_eleje.wav splice -q $(soxi -D " + introPath + "),2\n" +
-//                "mkdir -p " + destinationFilePath.getParent() + "\n" +
-//                "sox $TMPDIR/hirek_eleje.wav " + outroPath + " " + destinationFilePath + " splice -q $(soxi -D $TMPDIR/hirek_eleje.wav),2\n");
+        b.append("mkdir -p " + destinationPath.getParent() + "\n");
+        b.append("mv $TMPDIR/eddig.wav " + destinationPath + "\n");
+
         return b.toString();
     }
 
@@ -79,35 +71,53 @@ public class GenerateFile implements StateTransition {
         String result = "";
         result += addSilence3();
 
-        //trim loop
-        files.stream()
+        //loop
+        result += files.stream()
                 .filter(ne -> ne.getCategory().equals("news_loop"))
                 .findFirst()
                 .map(NewsElement::getPath)
-                .map(path -> );
+                .map(loopPath -> {
+                    return "sox " + getInputDirPath().resolve(loopPath) + " $TMPDIR/sized_loop.wav trim 0 $(soxi -s $TMPDIR/eddig.wav)s \n" +
+                            "sox -m $TMPDIR/eddig.wav $TMPDIR/sized_loop.wav $TMPDIR/tmp.wav\n" +
+                            "mv $TMPDIR/tmp.wav $TMPDIR/eddig.wav\n";
 
-        result += String.format("sox %s $TMPDIR/sized_loop.wav trim 0 $(soxi -s $TMPDIR/eddig.wav)s \n",getInputDirPath().resolve())
-        //loop + eddig
+                }).orElse("");
 
         //add intro
+        result += files.stream()
+                .filter(ne -> ne.getCategory().equals("news_intro"))
+                .findFirst()
+                .map(NewsElement::getPath)
+                .map(path -> {
+                    return join("" + getInputDirPath().resolve(path), "$TMPDIR/eddig.wav");
+                }).orElse("");
+
 
         //add outro
+        result += files.stream()
+                .filter(ne -> ne.getCategory().equals("news_outro"))
+                .findFirst()
+                .map(NewsElement::getPath)
+                .map(path -> {
+                    return join("$TMPDIR/eddig.wav", "" + getInputDirPath().resolve(path));
+                }).orElse("");
 
+        return result;
 
-                "sox -m $TMPDIR/zenemost.wav $TMPDIR/hireketmondunk.wav $TMPDIR/zeneshirek.wav\n" +
-                "sox " + introPath + " $TMPDIR/zeneshirek.wav $TMPDIR/hirek_eleje.wav splice -q $(soxi -D " + introPath + "),2\n" +
-                "mkdir -p " + destinationFilePath.getParent() + "\n" +
-                "sox $TMPDIR/hirek_eleje.wav " + outroPath + " " + destinationFilePath + " splice -q $(soxi -D $TMPDIR/hirek_eleje.wav),2\n");
+    }
 
+    private String join(String first, String second) {
+        return "sox " + first + " " + second + " $TMPDIR/tmp.wav splice -q $(soxi -D " + first + "),2\n" +
+                "mv $TMPDIR/tmp.wav $TMPDIR/eddig.wav\n";
     }
 
     private String addFile(String path) {
-        return String.format("sox $TMPDIR/eddig.wav %s $TMPDIR/tmp.wav\n" +
-                "mv $TMPDIR/tmp.wav $TMPDIR/eddig.wav\n", path);
+        return String.format("sox $TMPDIR/eddig.wav \"%s\" $TMPDIR/tmp.wav\n" +
+                "mv $TMPDIR/tmp.wav $TMPDIR/eddig.wav\n", getInputDirPath().resolve(path));
     }
 
     private String addSilence3() {
-        addFile("silence/silence3.wav");
+        return addFile("silence/silence3.wav");
     }
 
     public Path getOutputDirPath() {

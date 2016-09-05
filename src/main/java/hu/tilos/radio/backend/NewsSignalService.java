@@ -74,4 +74,8 @@ public class NewsSignalService {
     public Path getInputDir() {
         return Paths.get(inputDir);
     }
+
+    public Collection<NewsSignal> list() {
+        return signals.values();
+    }
 }

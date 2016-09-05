@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -22,6 +23,9 @@ public class NewsController {
 
     @Inject
     private NewsFileService fileService;
+
+    @Inject
+    private NewsSignalService signalService;
 
     @Inject
     UploadService uploadService;
@@ -36,6 +40,11 @@ public class NewsController {
     @RequestMapping(value = "/api/v1/news/file/{id}")
     public NewsFile get(@PathVariable String id) {
         return fileService.get(id);
+    }
+
+    @RequestMapping(value = "/api/v1/news/signal")
+    public Collection<NewsSignal> getSignals() {
+        return signalService.list();
     }
 
     @PreAuthorize("hasRole('ROLE_AUTHOR')")

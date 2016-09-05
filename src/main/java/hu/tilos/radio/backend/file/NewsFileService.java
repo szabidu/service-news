@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,6 +62,7 @@ public class NewsFileService {
     public synchronized List<NewsFile> getFiles() {
         List<NewsFile> allFiles = getRecentFiles();
         cleanup(allFiles);
+        Collections.sort(allFiles, (o1, o2) -> -1 * o1.getCreated().compareTo(o2.getCreated()));
         return getRecentFiles();
     }
 
