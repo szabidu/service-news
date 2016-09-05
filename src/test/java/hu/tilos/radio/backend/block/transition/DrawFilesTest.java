@@ -1,10 +1,8 @@
 package hu.tilos.radio.backend.block.transition;
 
-import hu.tilos.radio.backend.MockNewsBlockRepositoryFactory;
-import hu.tilos.radio.backend.MockNewsFileRepositoryFactory;
-import hu.tilos.radio.backend.MockNewsFileServiceFactory;
-import hu.tilos.radio.backend.NewsSignalService;
+import hu.tilos.radio.backend.*;
 import hu.tilos.radio.backend.block.NewsBlock;
+import hu.tilos.radio.backend.file.FileDuration;
 import hu.tilos.radio.backend.file.NewsFile;
 import hu.tilos.radio.backend.file.NewsFileService;
 import hu.tilos.radio.backend.mongoconverters.ScriptExecutor;
@@ -31,7 +29,8 @@ import java.util.List;
         MockNewsFileRepositoryFactory.class,
         MockNewsBlockRepositoryFactory.class,
         MockNewsFileServiceFactory.class,
-        NewsSignalService.class,
+        NewsSignalServiceStub.class,
+        FileDuration.class,
         ChildrenSelector.class,
         DrawFilesTest.class})
 @Component

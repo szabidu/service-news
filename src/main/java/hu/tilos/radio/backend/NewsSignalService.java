@@ -17,7 +17,7 @@ import java.util.*;
 @Service
 public class NewsSignalService {
 
-    private Map<String, NewsSignal> signals = new HashMap<>();
+    protected Map<String, NewsSignal> signals = new HashMap<>();
 
     private Random random = new Random();
 
