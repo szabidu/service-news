@@ -62,7 +62,6 @@ public class NewsFileService {
     public synchronized List<NewsFile> getFiles() {
         List<NewsFile> allFiles = getRecentFiles();
         cleanup(allFiles);
-        Collections.sort(allFiles, (o1, o2) -> -1 * o1.getCreated().compareTo(o2.getCreated()));
         return getRecentFiles();
     }
 
@@ -183,7 +182,11 @@ public class NewsFileService {
     }
 
     private List<NewsFile> getRecentFiles() {
-        return newsFileRepository.findAll().stream().filter(block -> block.getExpiration().isAfter(LocalDateTime.now())).collect(Collectors.toList());
+        return newsFileRepository
+                .findAll().stream()
+                .filter(block -> block.getExpiration().isAfter(LocalDateTime.now()))
+                .sorted((o1, o2) -> -1 * o1.getCreated().compareTo(o2.getCreated()))
+                .collect(Collectors.toList());
     }
 
 
