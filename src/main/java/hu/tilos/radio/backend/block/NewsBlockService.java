@@ -25,9 +25,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,22 +98,30 @@ public class NewsBlockService {
         }).collect(Collectors.toList());
     }
 
-    @Scheduled(fixedRate = 10 * 60 * 1000)
+    @Scheduled(cron = "0 0 3 * *")
+    public void todayDrawer() {
+        prepare();
+    }
+
+    @Scheduled(cron = "0 0 4 * *")
+    public void todayGenerator() {
+        prepare();
+    }
+
     public void prepare() {
         LOG.debug("Checking new files to generate");
         LocalDateTime now = LocalDateTime.now();
         List<NewsBlock> scheduledBlocks = getBlocks(LocalDate.now());
         scheduledBlocks.forEach(block -> {
             long untilThat = now.until(block.getDate(), ChronoUnit.MINUTES);
-            if (!block.isHandmade() && untilThat > 0 && untilThat < 6 * 60 && block.getPath() == null) {
+            if (!block.isHandmade() && untilThat > 0 && block.getPath() == null) {
                 if (block.getFiles().size() == 0) {
                     block = fileDrawer.process(block);
                 }
                 block = fileGenerator.process(block);
                 newsBlockRepository.save(block);
                 LOG.info("Mp3 file is generated for " + block.getDate() + "/" + block.getName());
-            } else if (!block.isHandmade() && block.getFiles().size() == 0 && untilThat >= 6 * 60 && untilThat < 8 *
-                    60) {
+            } else if (!block.isHandmade() && block.getFiles().size() == 0) {
                 block = fileDrawer.process(block);
                 newsBlockRepository.save(block);
                 LOG.info("News files are selected for " + block.getDate() + "/" + block.getName());
