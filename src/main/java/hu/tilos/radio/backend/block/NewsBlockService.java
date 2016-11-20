@@ -98,12 +98,12 @@ public class NewsBlockService {
         }).collect(Collectors.toList());
     }
 
-    @Scheduled(cron = "0 0 3 * *")
+    @Scheduled(cron = "0 0 3 * * *")
     public void todayDrawer() {
         prepare();
     }
 
-    @Scheduled(cron = "0 0 4 * *")
+    @Scheduled(cron = "0 0 4 * * *")
     public void todayGenerator() {
         prepare();
     }
