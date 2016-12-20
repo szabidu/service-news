@@ -55,7 +55,6 @@ public class NewsBlockService {
     @Inject
     ToInitial toInitial;
 
-
     public Path getOutputDirPath() {
         return Paths.get(outputDir);
     }

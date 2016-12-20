@@ -3,20 +3,31 @@ package hu.tilos.radio.backend;
 import hu.tilos.radio.backend.block.NewsBlock;
 import hu.tilos.radio.backend.block.NewsBlockService;
 import hu.tilos.radio.backend.block.NewsBlockToSave;
+import hu.tilos.radio.backend.file.FileDuration;
+import hu.tilos.radio.backend.file.NewsElement;
 import hu.tilos.radio.backend.file.NewsFile;
 import hu.tilos.radio.backend.file.NewsFileService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class NewsController {
 
+
+    @Inject
+    FileDuration fileDuration;
 
     @Inject
     private NewsBlockService blockService;
@@ -29,6 +40,9 @@ public class NewsController {
 
     @Inject
     UploadService uploadService;
+
+    @Value("${news.inputDir}")
+    private String inputDir;
 
 
     @RequestMapping(value = "/api/v1/news/file")
@@ -45,6 +59,26 @@ public class NewsController {
     @RequestMapping(value = "/api/v1/news/signal")
     public Collection<NewsSignal> getSignals() {
         return signalService.list();
+    }
+
+    /**
+     * Additional files to add to the news feed.
+     */
+    @RequestMapping(value = "/api/v1/news/plus")
+    public Collection<NewsElement> getPlus() {
+        try {
+            List<NewsElement> collect = Stream.concat(getExtraFiles("after"), getExtraFiles("before")).collect(Collectors.toList());
+            return collect;
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+
+
+    }
+
+    private Stream<NewsElement> getExtraFiles(String type) throws IOException {
+        return Files.list(Paths.get(inputDir).resolve(type)).map(path ->
+                NewsElement.from(Paths.get(inputDir).relativize(path), "news_" + type, fileDuration.calculate(path)));
     }
 
     @PreAuthorize("hasRole('ROLE_AUTHOR')")

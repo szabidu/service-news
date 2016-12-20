@@ -62,6 +62,21 @@ public class GenerateFile implements StateTransition {
         b.append(addSignal(block.getFiles()));
 
         b.append("mkdir -p " + destinationPath.getParent() + "\n");
+
+
+        b.append(block.getFiles().stream()
+                .filter(ne -> ne.getCategory().equals("news_after"))
+                .map(NewsElement::getPath)
+                .map(path -> join("$TMPDIR/eddig.wav", "" + getInputDirPath().resolve(path)))
+                .collect(Collectors.joining("\n")));
+
+
+        b.append(block.getFiles().stream()
+                .filter(ne -> ne.getCategory().equals("news_before"))
+                .map(NewsElement::getPath)
+                .map(path -> join("" + getInputDirPath().resolve(path), "$TMPDIR/eddig.wav"))
+                .collect(Collectors.joining("\n")));
+
         b.append("mv $TMPDIR/eddig.wav " + destinationPath + "\n");
 
         return b.toString();

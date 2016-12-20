@@ -213,6 +213,10 @@ public class NewsBlock {
             return 0;
         } else if (category.equals("news_outro")) {
             return 1000;
+        } else if (category.equals("news_before")) {
+            return -1;
+        } else if (category.equals("news_after")) {
+            return 1010;
         } else if (category.equals("news_loop")) {
             return 1001;
         } else if (category.equals("fontos")) {
