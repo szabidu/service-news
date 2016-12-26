@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,7 +27,6 @@ public class DefaultSelector implements Selector {
 
     @Inject
     private NewsSignalService signalService;
-
     @Inject
     FileDuration fileDuration;
 
@@ -49,6 +49,7 @@ public class DefaultSelector implements Selector {
         selectedFiles.add(randomSignal.getOutro());
         selectedFiles.add(randomSignal.getLoop());
 
+
         List<NewsFile> availableFiles = files.stream().filter(file -> {
             return file.getExpiration().isAfter(block.getDate()) && (file.getValidFrom() == null || file.getValidFrom().isBefore(block.getDate()));
         }).collect(Collectors.toList());
@@ -69,8 +70,21 @@ public class DefaultSelector implements Selector {
             }
 
         }
+        try {
+
+            selectedFiles.addAll(getMiscFiles("before"));
+            selectedFiles.addAll(getMiscFiles("after"));
+
+        } catch (IOException e) {
+            LOGGER.error("Can't list before or after files files", e);
+        }
         block.clearFiles();
         return selectedFiles;
+    }
+
+    private List<NewsElement> getMiscFiles(String directoryName) throws IOException {
+        Path directory = Paths.get(inputDir).resolve(directoryName);
+        return Files.list(directory).map(path -> NewsElement.from(Paths.get(inputDir).relativize(path), "news_" + directoryName, fileDuration.calculate(path))).collect(Collectors.toList());
     }
 
     protected void addCategoryTitle(NewsFile one, List<NewsElement> selectedFiles) {
