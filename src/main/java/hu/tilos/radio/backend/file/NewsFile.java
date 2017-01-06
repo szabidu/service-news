@@ -47,7 +47,7 @@ public class NewsFile {
         this.category = category;
         created = LocalDateTime.now();
         validFrom = LocalDateTime.now().minusDays(1);
-        expiration = LocalDateTime.now().plusDays(1);
+        expiration = LocalDateTime.now().plusDays(2);
 
     }
 
