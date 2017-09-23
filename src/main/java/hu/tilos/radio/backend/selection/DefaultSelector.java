@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class DefaultSelector implements Selector {
@@ -84,7 +85,10 @@ public class DefaultSelector implements Selector {
 
     private List<NewsElement> getMiscFiles(String directoryName) throws IOException {
         Path directory = Paths.get(inputDir).resolve(directoryName);
-        return Files.list(directory).map(path -> NewsElement.from(Paths.get(inputDir).relativize(path), "news_" + directoryName, fileDuration.calculate(path))).collect(Collectors.toList());
+        try (Stream<Path> files = Files.list(directory)) {
+            return files.map(path -> NewsElement.from(Paths.get(inputDir).relativize(path), "news_" + directoryName, fileDuration.calculate(path))).collect(Collectors.toList());
+        }
+
     }
 
     protected void addCategoryTitle(NewsFile one, List<NewsElement> selectedFiles) {

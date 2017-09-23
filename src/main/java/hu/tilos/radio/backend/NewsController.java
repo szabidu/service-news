@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -77,8 +78,10 @@ public class NewsController {
     }
 
     private Stream<NewsElement> getExtraFiles(String type) throws IOException {
-        return Files.list(Paths.get(inputDir).resolve(type)).map(path ->
+        try (Stream<Path> files = Files.list(Paths.get(inputDir).resolve(type))) {
+            return files.map(path ->
                 NewsElement.from(Paths.get(inputDir).relativize(path), "news_" + type, fileDuration.calculate(path)));
+        }
     }
 
     @PreAuthorize("hasRole('ROLE_AUTHOR')")
