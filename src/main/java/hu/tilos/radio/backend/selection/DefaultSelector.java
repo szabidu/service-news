@@ -73,8 +73,19 @@ public class DefaultSelector implements Selector {
         }
         try {
 
-            selectedFiles.addAll(getMiscFiles("before"));
-            selectedFiles.addAll(getMiscFiles("after"));
+            Random randomizer = new Random();
+            int randomFileIndex;
+            List<NewsElement> filesBefore = getMiscFiles("before");
+            if (filesBefore.size() > 0) {
+            randomFileIndex = randomizer.nextInt(filesBefore.size()-1);
+            selectedFiles.add(filesBefore.get(randomFileIndex)); 
+            }
+
+            List<NewsElement> filesAfter = getMiscFiles("after");
+            if (filesAfter.size() > 0) {
+            randomFileIndex = randomizer.nextInt(filesAfter.size()-1);
+            selectedFiles.add(filesAfter.get(randomFileIndex)); 
+}
 
         } catch (IOException e) {
             LOGGER.error("Can't list before or after files files", e);
