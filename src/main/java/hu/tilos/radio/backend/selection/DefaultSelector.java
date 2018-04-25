@@ -96,8 +96,7 @@ public class DefaultSelector implements Selector {
 
     private List<NewsElement> getMiscFiles(String directoryName) throws IOException {
         Path directory = Paths.get(inputDir).resolve(directoryName);
-        java.nio.file.NoSuchFileException: ${news.inputDir}/before 
-        at hu.tilos.radio.backend.selection.DefaultSelector.getMiscFiles(DefaultSelector.java:99)
+        try (Stream<Path> files = Files.list(directory)) {
             return files.map(path -> NewsElement.from(Paths.get(inputDir).relativize(path), "news_" + directoryName, fileDuration.calculate(path))).collect(Collectors.toList());
         }
 
