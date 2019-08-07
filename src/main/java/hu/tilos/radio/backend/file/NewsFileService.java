@@ -117,7 +117,7 @@ public class NewsFileService {
         }
     }
 
-    // No normalization any more, because it crashed (#2)
+    // No normalization any more, but gain guard against clipping, because --norm crashed (#2)
     private void copyAndNormalize(Path file) throws IOException {
         String fileName = file.getFileName().toString();
         String name = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -132,7 +132,7 @@ public class NewsFileService {
                 "set -e\n" +
                 "sox \"" + sourcePath + "\" -c 2 -r 44100 \"" + tmp1Path + "\"\n" +
                 "sox \"" + tmp1Path + "\" \"" + tmp2Path + "\" silence 1 0.1 0.1% reverse silence 1 0.1 0.1% reverse\n" +
-                "cp \"" + tmp2Path + "\" \"" + destinationPath + "\"";
+                "sox --guard \"" + tmp2Path + "\" \"" + destinationPath + "\"";
         scriptExecutor.executeScript(script, "/tmp", "fileimport");
 
     }
