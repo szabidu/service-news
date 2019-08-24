@@ -14,7 +14,7 @@ public class Friday implements BaseScheduling {
             .addBlock("este", LocalTime.of(19, 48), 12)
             .doubleBlock(7)
             .doubleBlockSymmetric(8, 30)
-            .doubleBlockSymmetric(10, 30)
+            .singleBlockSymmetric(10, 30)
             .singleBlockSymmetric(12, 0)
             .singleBlockSymmetric(13, 0)
             .doubleBlockSymmetric(15, 0)
