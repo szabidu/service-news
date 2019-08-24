@@ -24,7 +24,7 @@ public class Friday implements BaseScheduling {
                 .singleBlockPre(21)
                 .addBlock("3perces-20-21-havolt", LocalTime.of(20, 57), 6)
                 .addBlock("3perces-20-21-pot", LocalTime.of(21, 28, 30), 3)
-                .singleBlockAt(22)
+                .singleBlock(22)
                 .build();
 
     }
