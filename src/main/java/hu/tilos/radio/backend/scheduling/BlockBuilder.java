@@ -60,6 +60,13 @@ public class BlockBuilder {
         return this;
     }
 
+    protected BlockBuilder doubleBlockSymmetric(int hour, int min) {
+        LocalTime time = LocalTime.of(hour, min).minusSeconds(3 * 60);
+        addShort("3perces-" + hour, time.getHour(), time.getMinute(),
+            time.getSecond(), 6);
+        return this;
+    }
+
     protected BlockBuilder singleBlockAt(int hour, int min) {
         addShort("3perces-" + hour, hour, min, 0, 3);
         return this;
