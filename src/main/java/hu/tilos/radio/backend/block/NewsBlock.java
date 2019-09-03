@@ -174,7 +174,7 @@ public class NewsBlock {
     }
 
     public Path createDestinationPath() {
-        return Paths.get(getDate().format(dataBasedPath), getName() + ".mp3");
+        return Paths.get(getDate().format(dataBasedPath), getName() + ".wav");
     }
 
     public boolean isHandmade() {
