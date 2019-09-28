@@ -13,6 +13,7 @@ public class Tuesday implements BaseScheduling {
 
         BlockBuilder builder = new BlockBuilder(date)
                 .addBlock("reggel", LocalTime.of(5, 0), 12)
+                .doubleBlock(9)
                 .doubleBlock(10)
                 .doubleBlock(12)
                 .doubleBlock(14)
