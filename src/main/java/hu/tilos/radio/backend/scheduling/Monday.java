@@ -14,7 +14,7 @@ public class Monday implements BaseScheduling {
         BlockBuilder builder = new BlockBuilder(date)
                 .addBlock("reggel", LocalTime.of(5, 0), 12)
                 .singleBlockAt(6,57)
-                .doubleBlock(8)
+                .doubleBlock(9)
                 .doubleBlock(10)
                 .addShort("3perces-11-pot", 11, 0, 3)
                 .singleBlockAt(12);
