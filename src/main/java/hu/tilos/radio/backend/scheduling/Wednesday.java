@@ -13,7 +13,7 @@ public class Wednesday implements BaseScheduling {
         BlockBuilder builder = new BlockBuilder(date)
                 .addBlock("reggel", LocalTime.of(5, 0), 12)
                 .doubleBlock(7)
-                .doubleBlockSymmetric(8)
+                .singleBlockSymmetric(8, 30)
                 .doubleBlock(10)
                 .doubleBlock(12)
                 .singleBlockAt(13)
