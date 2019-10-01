@@ -75,13 +75,13 @@ public class DefaultSelector implements Selector {
 
             List<NewsElement> filesBefore = getMiscFiles("before");
             if (filesBefore.size() > 0) {
-            randomFileIndex = randomizer.nextInt(filesBefore.size()-1);
+            randomFileIndex = randomizer.nextInt(filesBefore.size());
             selectedFiles.add(filesBefore.get(randomFileIndex)); 
                 }
 
             List<NewsElement> filesAfter = getMiscFiles("after");
             if (filesAfter.size() > 0) {
-            randomFileIndex = randomizer.nextInt(filesAfter.size()-1);
+            randomFileIndex = randomizer.nextInt(filesAfter.size());
             selectedFiles.add(filesAfter.get(randomFileIndex)); 
 }
 
