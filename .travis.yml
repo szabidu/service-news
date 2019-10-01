@@ -4,7 +4,7 @@ services:
    - mongodb
 
 jdk:
-  - oraclejdk8
+  - openjdk8
   
 after_success:
 - mkdir -p target/upload
